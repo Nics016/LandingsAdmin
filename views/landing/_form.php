@@ -57,17 +57,29 @@ use dosamigos\ckeditor\CKEditor;
         </tbody>
     </table>
 
-    <?= $form->field($model, 'about_text')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'about_text')->widget(CKEditor::className(), [
+        'preset' => 'full'
+    ]) ?> 
 
-    <?= $form->field($model, 'characterstics_text')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'characterstics_text')->widget(CKEditor::className(), [
+        'preset' => 'full'
+    ]) ?>
 
-    <?= $form->field($model, 'news_text')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'news_text')->widget(CKEditor::className(), [
+        'preset' => 'full'
+    ]) ?>
 
-    <?= $form->field($model, 'infostructure_text')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'infostructure_text')->widget(CKEditor::className(), [
+        'preset' => 'full'
+    ]) ?>
 
-    <?= $form->field($model, 'location_text')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'location_text')->widget(CKEditor::className(), [
+        'preset' => 'full'
+    ]) ?>
 
-    <?= $form->field($model, 'contacts_text')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'contacts_text')->widget(CKEditor::className(), [
+        'preset' => 'full'
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

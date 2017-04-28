@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'price_sign',
                 'value' => function($model){
-                    switch($model['state']){
+                    switch($model['price_sign']){
                         case $model::PRICE_SIGN_RUB:
                             return "Руб";
                             break;

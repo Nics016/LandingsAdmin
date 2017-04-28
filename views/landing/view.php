@@ -15,8 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->landing_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->landing_id], [
+        <?= Html::a('Обновить', ['update', 'id' => $model->landing_id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Удалить', ['delete', 'id' => $model->landing_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -36,12 +36,30 @@ $this->params['breadcrumbs'][] = $this->title;
             'planning',
             'price',
             'price_sign',
-            'about_text:ntext',
-            'characterstics_text:ntext',
-            'news_text:ntext',
-            'infostructure_text:ntext',
-            'location_text:ntext',
-            'contacts_text:ntext',
+            [
+                'attribute' => 'about_text',
+                'format' => 'html',
+            ],
+            [
+                'attribute' => 'characterstics_text',
+                'format' => 'html',
+            ],
+            [
+                'attribute' => 'news_text',
+                'format' => 'html',
+            ],
+            [
+                'attribute' => 'infostructure_text',
+                'format' => 'html',
+            ],
+            [
+                'attribute' => 'location_text',
+                'format' => 'html',
+            ],
+            [
+                'attribute' => 'contacts_text',
+                'format' => 'html',
+            ],
         ],
     ]) ?>
 
