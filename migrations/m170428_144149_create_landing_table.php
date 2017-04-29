@@ -28,11 +28,14 @@ class m170428_144149_create_landing_table extends Migration
             'planning' => $this->smallInteger()->notNull()->defaultValue(10),
             'price' => $this->integer()->notNull()->defaultValue(0),
             'price_sign' => $this->smallInteger()->notNull()->defaultValue(10),
+            'object_photo' => $this->text(),
 
             'about_text' => $this->text()->notNull(),
-            'characterstics_text' => $this->text()->notNull(),
+            'characteristics_text' => $this->text()->notNull(),
+            'photos' => $this->text(),
             'news_text' => $this->text()->notNull(),
             'infostructure_text' => $this->text()->notNull(),
+            'arendator_photos' => $this->text(),
             'location_text' => $this->text()->notNull(),
             'contacts_text' => $this->text()->notNull(),
         ], $tableOptions);

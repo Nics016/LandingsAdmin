@@ -9,6 +9,35 @@ use dosamigos\ckeditor\CKEditor;
 /* @var $this yii\web\View */
 /* @var $model app\models\Landing */
 /* @var $form yii\widgets\ActiveForm */
+
+// Generating different labels on Update action to show images
+    $object_photo_label = $model->getAttributeLabel('object_photo');
+    $object_photos_label = $model->getAttributeLabel('photos_files');
+    $object_arendator_photos_label = $model->getAttributeLabel('arendator_photos_files');
+    // on Update we attach existing image
+    if (!$model->isNewRecord){
+        $object_photo_label .= '<br><img src="' 
+        .  $model->object_photo
+        . '">';
+
+        $photos = json_decode($model->photos);
+        if ($photos){
+            $answ = '<br>';
+            foreach ($photos as $photo){
+                $answ .= Html::img($photo, ['style' => 'max-width: 600px']).'<br>'.'<br>';
+            }
+            $object_photos_label .= $answ;
+        }
+
+        $photos = json_decode($model->arendator_photos);
+        if ($photos){
+            $answ = '<br>';
+            foreach ($photos as $photo){
+                $answ .= Html::img($photo, ['style' => 'max-width: 600px']).'<br>'.'<br>';
+            }
+            $object_arendator_photos_label .= $answ;
+        }
+    }
 ?>
 
 <div class="landing-form">
@@ -53,17 +82,20 @@ use dosamigos\ckeditor\CKEditor;
                         Landing::PRICE_SIGN_EUR => '€',
                     ], ['style' => 'width: 100px !important'])->label(false) ?>
                 </td>
-            </tr>
+            </tr>            
         </tbody>
+        <?= $form->field($model, 'object_photo_file')->fileInput()->label($object_photo_label) ?>
     </table>
-
+    
     <?= $form->field($model, 'about_text')->widget(CKEditor::className(), [
         'preset' => 'full'
     ]) ?> 
 
-    <?= $form->field($model, 'characterstics_text')->widget(CKEditor::className(), [
+    <?= $form->field($model, 'characteristics_text')->widget(CKEditor::className(), [
         'preset' => 'full'
     ]) ?>
+    
+    <?= $form->field($model, 'photos_files[]')->fileInput(['multiple' => true])->label($object_photos_label) ?>
 
     <?= $form->field($model, 'news_text')->widget(CKEditor::className(), [
         'preset' => 'full'
@@ -72,6 +104,8 @@ use dosamigos\ckeditor\CKEditor;
     <?= $form->field($model, 'infostructure_text')->widget(CKEditor::className(), [
         'preset' => 'full'
     ]) ?>
+
+    <?= $form->field($model, 'arendator_photos_files[]')->fileInput(['multiple' => true])->label($object_arendator_photos_label) ?>
 
     <?= $form->field($model, 'location_text')->widget(CKEditor::className(), [
         'preset' => 'full'

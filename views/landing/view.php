@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -93,12 +94,40 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
+                'attribute' => 'object_photo',
+                'format' => 'html',
+                'value' => function($model){
+                    if ($model->object_photo)
+                        return
+                            Html::img($model->object_photo, ['style' => 'max-width: 600px']);
+                    return 
+                        'Нет фото';
+                }
+            ],
+            [
                 'attribute' => 'about_text',
                 'format' => 'html',
             ],
             [
-                'attribute' => 'characterstics_text',
+                'attribute' => 'characteristics_text',
                 'format' => 'html',
+            ],
+            [
+                'attribute' => 'arendator_photos',
+                'label' => 'Фотографии',
+                'format' => 'html',
+                'value' => function($model){
+                    $photos = json_decode($model->photos);
+                    if ($photos){
+                        $answ = '';
+                        foreach ($photos as $photo){
+                            $answ .= Html::img($photo, ['style' => 'max-width: 600px']).'<br>'.'<br>';
+                        }
+                        return
+                            $answ;
+                    }
+                    return 'Нет фотографий';
+                }
             ],
             [
                 'attribute' => 'news_text',
@@ -107,6 +136,23 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'infostructure_text',
                 'format' => 'html',
+            ],
+            [
+                'attribute' => 'arendator_photos',
+                'label' => 'Арендаторы',
+                'format' => 'html',
+                'value' => function($model){
+                    $photos = json_decode($model->arendator_photos);
+                    if ($photos){
+                        $answ = '';
+                        foreach ($photos as $photo){
+                            $answ .= Html::img($photo, ['style' => 'max-width: 600px']).'<br>'.'<br>';
+                        }
+                        return
+                            $answ;
+                    }
+                    return 'Нет фотографий';
+                }
             ],
             [
                 'attribute' => 'location_text',

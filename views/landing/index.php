@@ -71,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             // 'about_text:ntext',
-            // 'characterstics_text:ntext',
+            // 'characteristics_text:ntext',
             // 'news_text:ntext',
             // 'infostructure_text:ntext',
             // 'location_text:ntext',
