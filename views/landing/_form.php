@@ -40,7 +40,7 @@ use dosamigos\tinymce\TinyMce;
         }
     }
 
-    $tinyOptions = [
+    $tinyOptions = [ 
     'options' => ['rows' => 6],
     'language' => 'ru',
     'clientOptions' => [
