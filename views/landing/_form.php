@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 
 use app\models\Landing;
 use dosamigos\ckeditor\CKEditor;
+use dosamigos\tinymce\TinyMce;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Landing */
@@ -14,7 +15,7 @@ use dosamigos\ckeditor\CKEditor;
     $object_photo_label = $model->getAttributeLabel('object_photo');
     $object_photos_label = $model->getAttributeLabel('photos_files');
     $object_arendator_photos_label = $model->getAttributeLabel('arendator_photos_files');
-    // on Update we attach existing image
+    // on Update we attach existing images to labels
     if (!$model->isNewRecord){
         $object_photo_label .= '<br><img src="' 
         .  $model->object_photo
@@ -38,6 +39,20 @@ use dosamigos\ckeditor\CKEditor;
             $object_arendator_photos_label .= $answ;
         }
     }
+
+    $tinyOptions = [
+    'options' => ['rows' => 6],
+    'language' => 'ru',
+    'clientOptions' => [
+        'plugins' => [
+            "advlist autolink lists link charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table contextmenu paste image"
+        ],
+        'toolbar' => "image insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link",
+        // 'toolbar' => "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+        'relative_urls' => false,
+    ]];
 ?>
 
 <div class="landing-form">
@@ -87,33 +102,21 @@ use dosamigos\ckeditor\CKEditor;
         <?= $form->field($model, 'object_photo_file')->fileInput()->label($object_photo_label) ?>
     </table>
     
-    <?= $form->field($model, 'about_text')->widget(CKEditor::className(), [
-        'preset' => 'full'
-    ]) ?> 
+    <?= $form->field($model, 'about_text')->widget(TinyMce::className(), $tinyOptions) ?> 
 
-    <?= $form->field($model, 'characteristics_text')->widget(CKEditor::className(), [
-        'preset' => 'full'
-    ]) ?>
+    <?= $form->field($model, 'characteristics_text')->widget(TinyMce::className(), $tinyOptions) ?>
     
     <?= $form->field($model, 'photos_files[]')->fileInput(['multiple' => true])->label($object_photos_label) ?>
 
-    <?= $form->field($model, 'news_text')->widget(CKEditor::className(), [
-        'preset' => 'full'
-    ]) ?>
+    <?= $form->field($model, 'news_text')->widget(TinyMce::className(), $tinyOptions) ?>
 
-    <?= $form->field($model, 'infostructure_text')->widget(CKEditor::className(), [
-        'preset' => 'full'
-    ]) ?>
+    <?= $form->field($model, 'infostructure_text')->widget(TinyMce::className(), $tinyOptions) ?>
 
     <?= $form->field($model, 'arendator_photos_files[]')->fileInput(['multiple' => true])->label($object_arendator_photos_label) ?>
 
-    <?= $form->field($model, 'location_text')->widget(CKEditor::className(), [
-        'preset' => 'full'
-    ]) ?>
+    <?= $form->field($model, 'location_text')->widget(TinyMce::className(), $tinyOptions) ?>
 
-    <?= $form->field($model, 'contacts_text')->widget(CKEditor::className(), [
-        'preset' => 'full'
-    ]) ?>
+    <?= $form->field($model, 'contacts_text')->widget(TinyMce::className(), $tinyOptions) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

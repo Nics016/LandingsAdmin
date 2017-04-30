@@ -88,6 +88,7 @@ class LandingController extends Controller
      */
     public function actionCreate()
     {
+        // return $this->renderContent($_SERVER['DOCUMENT_ROOT'].'/landigs/web/uploads');
         $model = new Landing();
 
         if ($model->load(Yii::$app->request->post())) {
