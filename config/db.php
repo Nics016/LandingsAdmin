@@ -6,4 +6,4 @@ return [
     'username' => 'cvetnik_landings',
     'password' => '333777',
     'charset' => 'utf8',
-];
+]; 
