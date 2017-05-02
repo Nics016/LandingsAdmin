@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 use app\models\Landing;
+use app\models\User;
 use dosamigos\ckeditor\CKEditor;
 use dosamigos\tinymce\TinyMce;
 
@@ -57,8 +58,9 @@ use dosamigos\tinymce\TinyMce;
 
 <div class="landing-form">
     <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+    <?php if ($model->isNewRecord || Yii::$app->user->identity->role == User::ROLE_ADMIN): ?>
+        <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+    <?php endif; ?>
 
     <table class="table">
         <thead class="thead-inverse">
