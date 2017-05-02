@@ -68,7 +68,7 @@
                 <!-- logo -->
                 <div class="logo">
                     <a href="<?= Url::toRoute(['/']) ?>">
-                        <img src="img/logo@2x.png" width="120" alt="" />
+                        Landings Admin
                     </a>
                 </div>
 
@@ -156,7 +156,7 @@
         <!-- Footer -->
         <footer class="main">
             
-            &copy; 2017 | LandingsAdmin
+            &copy; 2017 | Landings Admin
         
         </footer>
     </div>
