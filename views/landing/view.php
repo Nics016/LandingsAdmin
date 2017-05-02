@@ -4,12 +4,20 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 
+use Yii;
+use app\models\User;
+use app\models\UserLanding;
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Landing */
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Landings', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+// Показываем сайт только в том случае, если менеджер имеет доступ
+// к нему
+if (UserLanding::userHasAccessToLanding(Yii::$app->user->identity->id, $model->landing_id)):
 ?>
 <div class="landing-view">
 
@@ -17,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Обновить', ['update', 'id' => $model->landing_id], ['class' => 'btn btn-primary']) ?>
+        <?php if (Yii::$app->user->identity->role == User::ROLE_ADMIN): ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->landing_id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -24,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?php endif; ?>
     </p>
 
     <?= DetailView::widget([
@@ -31,6 +41,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'landing_id',
             'title',
+            [
+                'label' => 'К этому сайту имеют доступ менеджеры',
+                'format' => 'html',
+                'value' => function($model){
+                    $returnUl = '<ul>';
+                    $managers = UserLanding::findManagersByLanding($model->landing_id);
+                    foreach($managers as $man){
+                        $returnUl .= '<li>' . $man->username . '</li>';
+                    }
+                    $returnUl .= '</ul>';
+                    return $returnUl;
+                }
+            ],
             'meters',
             'floor',
             [
@@ -166,3 +189,6 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 </div>
+<?php else: ?>
+    <h1>Вы не имеете доступа к данному сайту</h1>
+<?php endif; ?>

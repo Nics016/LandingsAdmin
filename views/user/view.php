@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\data\ActiveDataProvider;
 
+use app\models\UserLanding;
+
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 
@@ -66,6 +68,19 @@ $this->params['breadcrumbs'][] = $this->title;
                             return "Администратор";
                             break;
                     }
+                }
+            ],
+            [
+                'label' => 'Имеет доступ к сайтам',
+                'format' => 'html',
+                'value' => function($model){
+                    $returnUl = '<ul>';
+                    $landings = UserLanding::findLandingsByManager($model->id);
+                    foreach($landings as $land){
+                        $returnUl .= '<li>' . $land->title . '</li>';
+                    }
+                    $returnUl .= '</ul>';
+                    return $returnUl;
                 }
             ],
             // 'created_at',

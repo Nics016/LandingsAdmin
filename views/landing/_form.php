@@ -41,17 +41,17 @@ use dosamigos\tinymce\TinyMce;
     }
 
     $tinyOptions = [ 
-    'options' => ['rows' => 6],
-    'language' => 'ru',
-    'clientOptions' => [
-        'plugins' => [
-            "advlist autolink lists link charmap print preview anchor",
-            "searchreplace visualblocks code fullscreen",
-            "insertdatetime media table contextmenu paste image"
-        ],
-        'toolbar' => "image insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link",
-        // 'toolbar' => "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
-        'relative_urls' => false,
+        'options' => ['rows' => 6],
+        'language' => 'ru',
+        'clientOptions' => [
+            'plugins' => [
+                "advlist autolink lists link charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table contextmenu paste image"
+            ],
+            'toolbar' => "image insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link",
+            // 'toolbar' => "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+            'relative_urls' => false,
     ]];
 ?>
 

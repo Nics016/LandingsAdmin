@@ -7,6 +7,7 @@
 	use common\widgets\Alert;
 
     use yii\helpers\Url;
+    use app\models\UserLanding;
     use app\models\User;
 
     AppAsset::register($this);
@@ -97,6 +98,18 @@
                         <span class="title">Сайты</span>
                     </a>
                     <ul>
+
+                    <?php if (Yii::$app->user->identity->role == User::ROLE_MANAGER): ?>
+                        <?php $landings = UserLanding::findLandingsByManager(Yii::$app->user->identity->id) ?>
+                        <?php foreach($landings as $land): ?>
+                            <li>
+                                <a href="<?= Url::toRoute(['landing/view', 'id' => $land->landing_id]) ?>">
+                                    <span class="title"><?= $land->title ?></span>
+                                </a>
+                            </li> 
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
                     <?php if (Yii::$app->user->identity->role == User::ROLE_ADMIN): ?>
                         <li>
                             <a href="<?= Url::toRoute(['landing/create']) ?>">
@@ -128,6 +141,8 @@
                                 <li><a href="<?= Url::toRoute(['user/create']) ?>"><span class="title">Создать нового</span></a></li>
                             </ul>
                         </li>   
+                        <li><a href="<?= Url::toRoute(['user-landing/create']) ?>"><span class="title">Предоставить доступ к сайту</span></a></li>
+                        <li><a href="<?= Url::toRoute(['user-landing/delete']) ?>"><span class="title">Лишить доступа к сайту</span></a></li>
                     </ul>
                 </li>
             <?php endif; ?>

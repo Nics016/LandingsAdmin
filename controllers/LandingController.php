@@ -42,6 +42,14 @@ class LandingController extends Controller
                 ],
                 'rules' => [
                     [
+                        'actions' => ['update', 'view'],
+                        'allow' => true,
+                        // Allow only admin
+                        'roles' => [
+                            User::ROLE_MANAGER
+                        ],
+                    ],
+                    [
                         'actions' => ['create', 'index', 'update', 'view', 'delete'],
                         'allow' => true,
                         // Allow only admin
