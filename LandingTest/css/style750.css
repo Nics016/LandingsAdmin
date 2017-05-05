@@ -1,0 +1,107 @@
+@media only screen and (max-width: 1023px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  #header nav {
+    padding-top: 7px;
+  }
+  .open_menu {
+    display: block;
+    height: 30px;
+    width: 50px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .open_menu::before {
+    display: block;
+    content: '';
+    background: #00b1eb;
+    height: 3px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  .open_menu::after {
+    display: block;
+    content: '';
+    background: #00b1eb;
+    height: 3px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+  .open_menu span {
+    display: block;
+    background: #00b1eb;
+    height: 3px;
+    position: absolute;
+    top: 13px;
+    left: 0;
+    right: 0;
+  }
+  .open_menu.active span {
+    opacity: 0;
+  }
+  .open_menu.active::before {
+    -webkit-transform: rotate(30deg);
+        -ms-transform: rotate(30deg);
+         -o-transform: rotate(30deg);
+            transform: rotate(30deg);
+    top: 50%;
+    left: 50%;
+    margin: -2px 0 0 -25px;
+  }
+  .open_menu.active::after {
+    -webkit-transform: rotate(-30deg);
+        -ms-transform: rotate(-30deg);
+         -o-transform: rotate(-30deg);
+            transform: rotate(-30deg);
+    bottom: 50%;
+    left: 50%;
+    margin: -2px 0 0 -25px;
+  }
+  .menu {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    display: block;
+    background: #fff;
+    opacity: 0;
+    height: 0;
+    overflow: auto;
+    -webkit-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(50,50,50,0.5);
+            box-shadow: 0px 1px 2px 0px rgba(50,50,50,0.5);
+    z-index: 100;
+  }
+  .menu.fixed {
+    position: fixed;
+    bottom: 0;
+  }
+  .menu.active {
+    opacity: 1;
+    height: auto;
+  }
+  .menu li {
+    display: block;
+  }
+  .menu li::before {
+    display: none;
+  }
+  .logo {
+    position: static;
+    margin: auto;
+    padding-bottom: 20px;
+  }
+  .header_top .header_box {
+    padding-top: 20px;
+  }
+  .list_photo li {
+    width: 25%;
+  }
+}

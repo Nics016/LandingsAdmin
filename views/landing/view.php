@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 
-use Yii;
 use app\models\User;
 use app\models\UserLanding;
 
@@ -51,6 +50,8 @@ if (UserLanding::userHasAccessToLanding(Yii::$app->user->identity->id, $model->l
                         $returnUl .= '<li>' . $man->username . '</li>';
                     }
                     $returnUl .= '</ul>';
+                    if ($returnUl === '<ul></ul>')
+                        $returnUl = 'нет';
                     return $returnUl;
                 }
             ],

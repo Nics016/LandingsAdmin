@@ -1,0 +1,114 @@
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+  h2 {
+    font-size: 32px;
+  }
+  h1 {
+    font-size: 50px;
+  }
+  .head_title p {
+    font-size: 20px;
+  }
+  .head_phone {
+    display: block;
+    float: none;
+    width: auto;
+    text-align: center;
+  }
+  .head_address {
+    padding-top: 20px;
+    display: block;
+    float: none;
+    width: 100%;
+    text-align: center;
+    max-width: inherit;
+  }
+  .logo {
+    width: 290px;
+  }
+  .header_btn {
+    padding-bottom: 5px;
+  }
+  .header_bot_col {
+    width: 100%;
+    padding: 0 0 15px !important;
+    text-align: center;
+  }
+  .header_bot_col .btn_blue {
+    width: 100%;
+    text-align: center;
+    padding: 0;
+  }
+  .tbl_free th {
+    display: none;
+  }
+  .tbl_free td {
+    display: block;
+    padding: 5px 10px;
+    border: 0;
+  }
+  .tbl_free td:first-child {
+    padding-top: 10px;
+  }
+  .tbl_free td:last-child {
+    padding-bottom: 10px;
+  }
+  .tbl_free td::before {
+    display: block;
+    color: #00b1eb;
+  }
+  .tbl_free td:nth-child(1)::before {
+    content: 'Площадь, кв.м.';
+  }
+  .tbl_free td:nth-child(2)::before {
+    content: 'Этаж';
+  }
+  .tbl_free td:nth-child(3)::before {
+    content: 'Цена, кв.м./год';
+  }
+  .tbl_free td:nth-child(4)::before {
+    content: 'Состояние';
+  }
+  .tbl_free td:nth-child(5)::before {
+    content: 'Планировка';
+  }
+  .tbl_free .tbl_hidden td:nth-child(1)::before {
+    display: none;
+  }
+  .section {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+  .section .form_page {
+    padding-top: 30px;
+  }
+  .header_bot {
+    min-height: 480px;
+  }
+  #map {
+    height: 300px;
+  }
+  .free_photo .list_photo li,
+  .list_photo li {
+    width: 33.3333%;
+  }
+}
+@media only screen and (max-width: 580px) {
+  .free_photo .list_photo li,
+  .list_photo li {
+    width: 50%;
+  }
+  h2 {
+    font-size: 28px;
+  }
+  .head_title p {
+    font-size: 18px;
+  }
+}
+@media only screen and (max-width: 420px) {
+  .popup_box {
+    width: 290px;
+  }
+}
