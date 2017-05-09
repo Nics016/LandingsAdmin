@@ -33,7 +33,7 @@ class LandingController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['POST', 'GET'],
                 ],
             ],
 
@@ -52,7 +52,8 @@ class LandingController extends Controller
                         ],
                     ],
                     [
-                        'actions' => ['ask-places', 'create', 'index', 'update', 'view', 'delete'],
+                        'actions' => ['create', 'index', 'update', 'view', 'delete',
+                            'ask-places', 'ask-places-update'],
                         'allow' => true,
                         // Allow only admin
                         'roles' => [
@@ -92,6 +93,29 @@ class LandingController extends Controller
     }
 
     /**
+     * Page which is shown before 'update'
+     * to ask how many places should there be.
+     */
+    public function actionAskPlacesUpdate($land_id)
+    {
+        $model = new AskPlaces();
+
+        $numPlaces = count(Place::findPlacesByLanding($land_id));
+
+        if ($model->load(Yii::$app->request->post())) {
+                return $this->redirect([
+                    'update', 
+                    'id' => $land_id,
+                    'numPlaces' => $model->numPlaces
+                ]);
+        } else {
+            return $this->render('ask-places-update', [
+                'model' => $model,
+                'numPlaces' => $numPlaces,
+            ]);
+        }
+    }
+    /**
      * Page which is shown before 'create'
      * to ask how many places should there be.
      */
@@ -100,7 +124,7 @@ class LandingController extends Controller
         $model = new AskPlaces();
 
         if ($model->load(Yii::$app->request->post())) {
-            return $this->redirect(['create', 'numPlaces' => $model->numPlaces]);
+                return $this->redirect(['create', 'numPlaces' => $model->numPlaces]);
         } else {
             return $this->render('ask-places', [
                 'model' => $model,
@@ -119,8 +143,6 @@ class LandingController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             // Uploading files for places
-            // $model->object_photos_files = UploadedFile::getInstances($model, 'object_photos_files[1]');
-            // return $this->renderContent(print_r($model->object_photos_files));
 
             $model->convertFilesArrayToJson(
                 $model,
@@ -128,13 +150,15 @@ class LandingController extends Controller
                 'object_photos',
                 $numPlaces
             );
-            $model->photos = $model->convertFilesToJson(
+            $model->convertFilesToJson(
                 $model,
-                'photos_files'                
+                'photos_files',
+                'photos'                
             );
-            $model->arendator_photos = $model->convertFilesToJson(
+            $model->convertFilesToJson(
                 $model,
-                'arendator_photos_files'
+                'arendator_photos_files',
+                'arendator_photos'
             );
 
             if ($model->save(false)){
@@ -166,30 +190,40 @@ class LandingController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $numPlaces)
     {
         $model = $this->findModel($id);
+
         if ($model->load(Yii::$app->request->post())) {
-            // getting paths for files
-            // $model->object_photos_files = UploadedFile::getInstance($model, 'object_photos_files');
-            // if ($model->object_photo_file !== null)
-                // $model->object_photo = $model->generateFileName($model->object_photo_file);
+            // Uploading files for places
 
-            $model->photos_files = UploadedFile::getInstances($model, 'photos_files');
-            if (count($model->photos_files) > 0)
-                $model->photos = $model->generateJsonArray($model->photos_files);
-            $model->arendator_photos_files = UploadedFile::getInstances($model, 'arendator_photos_files');
-            if (count($model->arendator_photos_files) > 0)
-                $model->arendator_photos = $model->generateJsonArray($model->arendator_photos_files);
+            $model->convertFilesArrayToJson(
+                $model,
+                'object_photos_files',
+                'object_photos',
+                $numPlaces
+            );
+            $model->convertFilesToJson(
+                $model,
+                'photos_files',
+                'photos'                
+            );
+            $model->convertFilesToJson(
+                $model,
+                'arendator_photos_files',
+                'arendator_photos'
+            );
 
-            if ($model->save()){
+            if ($model->save(false)){
                 // saving files on server
-                // if ($model->object_photo_file)
-                    // $model->object_photo_file->saveAs($model->object_photo);
-                if (count($model->photos_files) > 0)
-                    $model->saveFilesByJsonArray($model->photos_files, $model->photos);
-                if (count($model->arendator_photos_files) > 0)
-                    $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
+                for($i = 0; $i < $numPlaces; $i++){
+                    if (array_key_exists($i, $model->object_photos))
+                        $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
+                }
+                $model->saveFilesByJsonArray($model->photos_files, $model->photos);
+                $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
+
+                $model->createPlaces($model, $numPlaces);
 
                 return $this->redirect(['view', 'id' => $model->landing_id]);
             }
@@ -197,8 +231,11 @@ class LandingController extends Controller
                 print_r($model->getErrors());        
             
         } else {
+            $existingPlaces = Place::findPlacesByLanding($model->landing_id);
             return $this->render('update', [
                 'model' => $model,
+                'numPlaces' => $numPlaces,
+                'existingPlaces' => $existingPlaces,
             ]);
         }
     }

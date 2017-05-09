@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 use app\models\Landing;
+use app\models\Place;
 use app\models\User;
 use dosamigos\ckeditor\CKEditor;
 use dosamigos\tinymce\TinyMce;
@@ -12,6 +13,7 @@ use dosamigos\tinymce\TinyMce;
 /* @var $model app\models\Landing */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $numPlaces integer */
+/* @var $existingPlaces array of app\models\Place */
 
 // Generating different labels on Update action to show images
     // $object_photos_label = $model->getAttributeLabel('object_photos');
@@ -76,23 +78,63 @@ use dosamigos\tinymce\TinyMce;
             </tr>
         </thead>
         <tbody>
-            <?php for ($i = 0; $i < $numPlaces; $i++): ?>
+            <?php $startIndex = 0; ?>
+            <?php  if (!$model->isNewRecord): 
+                $startIndex = count($existingPlaces);
+                // outputting existing places
+            ?>
+                 <?php for ($i = 0; $i < count($existingPlaces); $i++): ?>
+                <tr>
+                    <td style="width: 100px"><?= $form->field($model, 'meters[' . $i . ']')->textInput(['size' => 2, 'value' => $existingPlaces[$i]['meters']])->label(false) ?></td>
+                    <td style="width: 100px"><?= $form->field($model, 'floor[' . $i . ']')->textInput(['maxlength' => true, 'size' => 1, 'value' => $existingPlaces[$i]['floor']])->label(false) ?></td>
+                    <td style="width: 150px">
+                        <?= $form->field($model, 'state[' . $i . ']')->dropDownList([
+                            Place::STATE_READY => 'готово к въезду',
+                            Place::STATE_OTDELKA => 'под отделку',
+                            Place::STATE_CLEAR_OTDELKA => 'под чистовую отделку',
+                            Place::STATE_SELLING => 'продажа',
+                        ], ['value' => $existingPlaces[$i]['state']])->label(false) ?>
+                    </td>
+                    <td style="width: 150px">
+                        <?= $form->field($model, 'planning[' . $i . ']')->dropDownList([
+                            Place::PLANNING_OPEN => 'открытая',
+                            Place::PLANNING_MIXED => 'смешанная',
+                            Place::PLANNING_CABINET => 'кабинетная',
+                        ], ['value' => $existingPlaces[$i]['planning']])->label(false) ?>
+                    </td>
+                    <td style="width: 100px">
+                        <?= $form->field($model, 'price[' . $i . ']')->textInput(['value' => $existingPlaces[$i]['price']])->label(false) ?>
+                    </td>
+                    <td>
+                         <?= $form->field($model, 'price_sign[' . $i . ']')->dropDownList([
+                            Place::PRICE_SIGN_RUB => 'Руб',
+                            Place::PRICE_SIGN_DOL => '$',
+                            Place::PRICE_SIGN_EUR => '€',
+                        ], ['value' => $existingPlaces[$i]['price_sign']])->label(false) ?>
+                    </td>
+                    <td style="width: 150px"><?= $form->field($model, 'object_photos_files[' . $i . '][]')->fileInput(['multiple' => true])->label(false) ?></td>
+                </tr>        
+                <?php endfor; ?> 
+
+            <?php endif; ?>
+            
+            <?php for ($i = $startIndex; $i < $numPlaces; $i++): ?>
             <tr>
                 <td style="width: 100px"><?= $form->field($model, 'meters[' . $i . ']')->textInput(['size' => 2])->label(false) ?></td>
                 <td style="width: 100px"><?= $form->field($model, 'floor[' . $i . ']')->textInput(['maxlength' => true, 'size' => 1])->label(false) ?></td>
                 <td style="width: 150px">
                     <?= $form->field($model, 'state[' . $i . ']')->dropDownList([
-                        Landing::STATE_READY => 'готово к въезду',
-                        Landing::STATE_OTDELKA => 'под отделку',
-                        Landing::STATE_CLEAR_OTDELKA => 'под чистовую отделку',
-                        Landing::STATE_SELLING => 'продажа',
+                        Place::STATE_READY => 'готово к въезду',
+                        Place::STATE_OTDELKA => 'под отделку',
+                        Place::STATE_CLEAR_OTDELKA => 'под чистовую отделку',
+                        Place::STATE_SELLING => 'продажа',
                     ])->label(false) ?>
                 </td>
                 <td style="width: 150px">
                     <?= $form->field($model, 'planning[' . $i . ']')->dropDownList([
-                        Landing::PLANNING_OPEN => 'открытая',
-                        Landing::PLANNING_MIXED => 'смешанная',
-                        Landing::PLANNING_CABINET => 'кабинетная',
+                        Place::PLANNING_OPEN => 'открытая',
+                        Place::PLANNING_MIXED => 'смешанная',
+                        Place::PLANNING_CABINET => 'кабинетная',
                     ])->label(false) ?>
                 </td>
                 <td style="width: 100px">
@@ -100,9 +142,9 @@ use dosamigos\tinymce\TinyMce;
                 </td>
                 <td>
                      <?= $form->field($model, 'price_sign[' . $i . ']')->dropDownList([
-                        Landing::PRICE_SIGN_RUB => 'Руб',
-                        Landing::PRICE_SIGN_DOL => '$',
-                        Landing::PRICE_SIGN_EUR => '€',
+                        Place::PRICE_SIGN_RUB => 'Руб',
+                        Place::PRICE_SIGN_DOL => '$',
+                        Place::PRICE_SIGN_EUR => '€',
                     ])->label(false) ?>
                 </td>
                 <td style="width: 150px"><?= $form->field($model, 'object_photos_files[' . $i . '][]')->fileInput(['multiple' => true])->label(false) ?></td>
@@ -126,6 +168,9 @@ use dosamigos\tinymce\TinyMce;
     <?= $form->field($model, 'location_text')->widget(TinyMce::className(), $tinyOptions) ?>
 
     <?= $form->field($model, 'contacts_text')->widget(TinyMce::className(), $tinyOptions) ?>
+
+    <?= $form->field($model, 'latitude')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'longitude')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

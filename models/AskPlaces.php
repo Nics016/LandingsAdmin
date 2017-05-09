@@ -11,7 +11,7 @@ use yii\base\Model;
 		public function rules()
 		{
 			return [
-			    ['numPlaces', 'number'],
+			    ['numPlaces', 'integer'],
 			    ['numPlaces', 'required'],
 		    ];
 		}

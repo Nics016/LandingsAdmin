@@ -25,7 +25,7 @@ if (UserLanding::userHasAccessToLanding(Yii::$app->user->identity->id, $model->l
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Обновить', ['update', 'id' => $model->landing_id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Обновить', ['ask-places-update', 'land_id' => $model->landing_id], ['class' => 'btn btn-primary']) ?>
         <?php if (Yii::$app->user->identity->role == User::ROLE_ADMIN): ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->landing_id], [
             'class' => 'btn btn-danger',

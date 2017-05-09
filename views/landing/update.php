@@ -4,6 +4,8 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Landing */
+/* @var $numPlaces integer */
+/* @var $existingPlaces array of app\models\Place */
 
 $this->title = 'Обновить сайт: ' . $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Landings', 'url' => ['index']];
@@ -16,6 +18,8 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'numPlaces' => $numPlaces,
+        'existingPlaces' => $existingPlaces,
     ]) ?>
 
 </div>

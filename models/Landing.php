@@ -28,25 +28,11 @@ use app\models\PlaceLanding;
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
+ * @property decimal $latitude
+ * @property decimal $longitude
  */
 class Landing extends \yii\db\ActiveRecord
 {
-    ///////////////
-    // Константы //
-    ///////////////
-    const STATE_READY = 10;
-    const STATE_OTDELKA = 20;
-    const STATE_CLEAR_OTDELKA = 30;
-    const STATE_SELLING = 40;
-
-    const PLANNING_OPEN = 10;
-    const PLANNING_MIXED = 20;
-    const PLANNING_CABINET = 30;
-
-    const PRICE_SIGN_RUB = 10;
-    const PRICE_SIGN_DOL = 20;
-    const PRICE_SIGN_EUR = 30;
-
     ////////////////
     // Properties //
     ////////////////
@@ -83,9 +69,9 @@ class Landing extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            ['meters', 'number'],
+            [['meters', 'latitude', 'longitude'], 'number'],
             [['state', 'planning', 'price', 'price_sign'], 'integer'],
-            [['floor', 'about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text'], 'required'],
+            [['floor', 'about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text', 'latitude', 'longitude'], 'required'],
             [['about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text'], 'string'],
             [['title', 'floor'], 'string', 'max' => 32],
             [
@@ -114,7 +100,27 @@ class Landing extends \yii\db\ActiveRecord
      */
     public function createPlaces($model, $numPlaces)
     {
-        for($i = 0; $i < $numPlaces; $i++){
+        // update existing
+        $placesExist = Place::find()
+            ->where('landing_id=' . $model->landing_id)
+            ->all();
+        for($i = 0; $i < count($placesExist); $i++){
+            $modelPlace = $placesExist[$i];
+            $modelPlace->meters = $model->meters[$i];
+            $modelPlace->floor = $model->floor[$i];
+            $modelPlace->state = $model->state[$i];
+            $modelPlace->planning = $model->planning[$i];
+            $modelPlace->price = $model->price[$i];
+            $modelPlace->price_sign = $model->price_sign[$i];
+            if (array_key_exists($i, $model->object_photos)
+                && array_key_exists($i, $model->object_photos_files)
+                && count($model->object_photos_files[$i] > 0))
+                $modelPlace->object_photos = $model->object_photos[$i];
+            $modelPlace->save(false);
+        }
+
+        // create new
+        for($i = count($placesExist); $i < $numPlaces; $i++){
             $modelPlace = new Place();
             $modelPlace->landing_id = $model->landing_id;
             $modelPlace->meters = $model->meters[$i];
@@ -123,7 +129,10 @@ class Landing extends \yii\db\ActiveRecord
             $modelPlace->planning = $model->planning[$i];
             $modelPlace->price = $model->price[$i];
             $modelPlace->price_sign = $model->price_sign[$i];
-            $modelPlace->object_photos = $model->object_photos[$i];
+            if (array_key_exists($i, $model->object_photos))
+                $modelPlace->object_photos = $model->object_photos[$i];
+            else
+                $modelPlace->object_photos = '';
             $modelPlace->save(false);
         }
     }
@@ -155,11 +164,11 @@ class Landing extends \yii\db\ActiveRecord
      * @param  string $attrName аттрибут файлов
      * @return JsonArrayString        возвращаемая строка - json
      */
-    public function convertFilesToJson(&$model, $attrName)
+    public function convertFilesToJson(&$model, $attrName, $attrNameJson)
     {
         $model[$attrName] = UploadedFile::getInstances($model, $attrName);
-
-        return $this->generateJsonArray($model[$attrName]);
+        if (count($model[$attrName]) > 0)
+            $model[$attrNameJson] = $this->generateJsonArray($model[$attrName]);
     }
 
     /**
@@ -179,7 +188,8 @@ class Landing extends \yii\db\ActiveRecord
             $newAttrNameArray[$i] = UploadedFile::getInstances(
                 $model, $attrName . '[' . $i . ']');
 
-            $newAttrNameJsonArray[$i] = $this->generateJsonArray($newAttrNameArray[$i]);
+            if (count($newAttrNameArray[$i]) > 0)
+                $newAttrNameJsonArray[$i] = $this->generateJsonArray($newAttrNameArray[$i]);
         }
         $model[$attrName] = $newAttrNameArray;
         $model[$attrJson] = $newAttrNameJsonArray;
@@ -208,7 +218,7 @@ class Landing extends \yii\db\ActiveRecord
      */
     public function saveFilesByJsonArray($files, $fileNameArrayJson)
     {
-        if ($files){
+        if (count($files) > 0){
             $fileNameArray = json_decode($fileNameArrayJson);
             for ($i = 0; $i < count($fileNameArray); $i++){
                 if ($files[$i]){
@@ -238,6 +248,8 @@ class Landing extends \yii\db\ActiveRecord
             'contacts_text' => 'Контакты',
             'photos_files' => 'Фотографии (можно выбрать несколько файлов)',
             'arendator_photos_files' => 'Арендаторы (можно выбрать несколько файлов)',
+            'latitude' => 'Широта (для Google Maps)',
+            'longitude' => 'Долгота (для Google Maps)',
         ];
     }
 }

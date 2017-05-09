@@ -41,7 +41,47 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'location_text:ntext',
             // 'contacts_text:ntext',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'header' => 'Actions',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'template' => '{view}{update}{delete}',
+                'buttons' => [
+                'view' => function ($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
+                                'title' => Yii::t('app', 'lead-view'),
+                    ]);
+                },
+
+                'update' => function ($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                                'title' => Yii::t('app', 'lead-update'),
+                    ]);
+                },
+                'delete' => function ($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                                'title' => Yii::t('app', 'lead-delete'),
+                    ]);
+                }
+
+                ],
+                'urlCreator' => function ($action, $model, $key, $index) {
+                    if ($action === 'view') {
+                        $url ='index.php?r=landing/view&id='.$model->landing_id;
+                        return $url;
+                    }
+
+                    if ($action === 'update') {
+                        $url ='index.php?r=landing/ask-places-update&land_id='.$model->landing_id;
+                        return $url;
+                    }
+                    if ($action === 'delete') {
+                        $url ='index.php?r=landing/delete&id='.$model->landing_id;
+                        return $url;
+                    }
+
+                }
+            ],
         ],
     ]); ?>
 </div>
