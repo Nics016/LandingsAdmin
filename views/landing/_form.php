@@ -11,16 +11,17 @@ use dosamigos\tinymce\TinyMce;
 /* @var $this yii\web\View */
 /* @var $model app\models\Landing */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $numPlaces integer */
 
 // Generating different labels on Update action to show images
-    $object_photo_label = $model->getAttributeLabel('object_photo');
+    // $object_photos_label = $model->getAttributeLabel('object_photos');
     $object_photos_label = $model->getAttributeLabel('photos_files');
     $object_arendator_photos_label = $model->getAttributeLabel('arendator_photos_files');
     // on Update we attach existing images to labels
     if (!$model->isNewRecord){
-        $object_photo_label .= '<br><img src="' 
-        .  $model->object_photo
-        . '">';
+        // $object_photos_label .= '<br><img src="' 
+        // .  $model->object_photos
+        // . '">';
 
         $photos = json_decode($model->photos);
         if ($photos){
@@ -70,14 +71,17 @@ use dosamigos\tinymce\TinyMce;
                 <th>Состояние</th>
                 <th>Планировка</th>
                 <th>Ставка</th>
+                <th></th>
+                <th>Фото</th>
             </tr>
         </thead>
         <tbody>
+            <?php for ($i = 0; $i < $numPlaces; $i++): ?>
             <tr>
-                <td style="width: 100px"><?= $form->field($model, 'meters')->textInput(['size' => 2])->label(false) ?></td>
-                <td style="width: 100px"><?= $form->field($model, 'floor')->textInput(['maxlength' => true, 'size' => 1])->label(false) ?></td>
-                <td style="width: 200px">
-                    <?= $form->field($model, 'state')->dropDownList([
+                <td style="width: 100px"><?= $form->field($model, 'meters[' . $i . ']')->textInput(['size' => 2])->label(false) ?></td>
+                <td style="width: 100px"><?= $form->field($model, 'floor[' . $i . ']')->textInput(['maxlength' => true, 'size' => 1])->label(false) ?></td>
+                <td style="width: 150px">
+                    <?= $form->field($model, 'state[' . $i . ']')->dropDownList([
                         Landing::STATE_READY => 'готово к въезду',
                         Landing::STATE_OTDELKA => 'под отделку',
                         Landing::STATE_CLEAR_OTDELKA => 'под чистовую отделку',
@@ -85,23 +89,26 @@ use dosamigos\tinymce\TinyMce;
                     ])->label(false) ?>
                 </td>
                 <td style="width: 150px">
-                    <?= $form->field($model, 'planning')->dropDownList([
+                    <?= $form->field($model, 'planning[' . $i . ']')->dropDownList([
                         Landing::PLANNING_OPEN => 'открытая',
                         Landing::PLANNING_MIXED => 'смешанная',
                         Landing::PLANNING_CABINET => 'кабинетная',
                     ])->label(false) ?>
                 </td>
-                <td style="width: 180px">
-                    <?= $form->field($model, 'price')->textInput()->label(false) ?>
-                    <?= $form->field($model, 'price_sign')->dropDownList([
+                <td style="width: 100px">
+                    <?= $form->field($model, 'price[' . $i . ']')->textInput()->label(false) ?>
+                </td>
+                <td>
+                     <?= $form->field($model, 'price_sign[' . $i . ']')->dropDownList([
                         Landing::PRICE_SIGN_RUB => 'Руб',
                         Landing::PRICE_SIGN_DOL => '$',
                         Landing::PRICE_SIGN_EUR => '€',
-                    ], ['style' => 'width: 100px !important'])->label(false) ?>
+                    ])->label(false) ?>
                 </td>
-            </tr>            
+                <td style="width: 150px"><?= $form->field($model, 'object_photos_files[' . $i . '][]')->fileInput(['multiple' => true])->label(false) ?></td>
+            </tr>        
+            <?php endfor; ?>   
         </tbody>
-        <?= $form->field($model, 'object_photo_file')->fileInput()->label($object_photo_label) ?>
     </table>
     
     <?= $form->field($model, 'about_text')->widget(TinyMce::className(), $tinyOptions) ?> 
@@ -127,3 +134,45 @@ use dosamigos\tinymce\TinyMce;
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<script>
+    var trHtml = ''; // tr with 0-index
+    var initialNum = 0; // Landing[meters][0]
+    var curCount = 0; // Landing[meters][curCount]
+
+    /**
+     * Generates new tr html from the initial
+     * by replacing 0 index to the current index.
+     * 
+     * @param  {string} initialTr - tr code with 0 indexes  
+     * @param  {integer} num   - number to be pasted instead of 0
+     * @return {string}  new tr code
+     */
+    function createTrHtml(initialTr, num){
+        var buff = initialTr;
+
+        buff = buff.replace(/-0/g, '-' + num); // /value/g performs global replacement
+        buff = buff.replace('[0]', '[' + num + ']');
+
+        return buff;
+    }
+
+    /**
+     * Function which fires when "Add place" btn is clicked
+     */
+    function addNewPlace(){
+        curCount++;
+        var newTrHtml = createTrHtml(trHtml, curCount);
+        $('tbody').append(newTrHtml);        
+    }
+
+    // $(document).ready(function(){
+    //     trHtml = "<tr>" + $('tbody tr.first').html() + "</tr>";
+
+    //     $('#addPlaceBtn').bind('click', function(event){
+    //         event.preventDefault();
+    //         addNewPlace();
+    //     });
+    // });
+    
+</script>

@@ -112,7 +112,7 @@
 
                     <?php if (Yii::$app->user->identity->role == User::ROLE_ADMIN): ?>
                         <li>
-                            <a href="<?= Url::toRoute(['landing/create']) ?>">
+                            <a href="<?= Url::toRoute(['landing/ask-places']) ?>">
                                 <span class="title">Добавить новый</span>
                             </a>
                         </li> 

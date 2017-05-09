@@ -5,6 +5,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Landing */
+/* @var $numPlaces integer */
 
 $this->title = 'Создать Лэндинг';
 $this->params['breadcrumbs'][] = ['label' => 'Landings', 'url' => ['index']];
@@ -16,6 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'numPlaces' => $numPlaces
     ]) ?>
 
 </div>

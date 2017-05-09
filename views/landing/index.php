@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 use app\models\Landing;
+use app\models\Place;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Создать новый', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать новый', ['ask-places'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -25,49 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'landing_id',
             'title',
-            'meters',
-            'floor',
+            
             [
-                'attribute' => 'state',
+                'label' => 'Количество помещений',
                 'value' => function($model){
-                    switch($model['state']){
-                        case $model::STATE_READY:
-                            return "готово к въезду";
-                            break;
-
-                        case $model::STATE_OTDELKA:
-                            return "под отделку";
-                            break;
-
-                        case $model::STATE_CLEAR_OTDELKA:
-                            return "под чистовую отделку";
-                            break;
-
-                        case $model::STATE_SELLING:
-                            return "продажа";
-                            break;
-
-                    }
-                }
-            ],
-            // 'planning',
-            'price',
-            [
-                'attribute' => 'price_sign',
-                'value' => function($model){
-                    switch($model['price_sign']){
-                        case $model::PRICE_SIGN_RUB:
-                            return "Руб";
-                            break;
-
-                        case $model::PRICE_SIGN_DOL:
-                            return "$";
-                            break;
-
-                        case $model::PRICE_SIGN_EUR:
-                            return "€";
-                            break;
-                    }
+                    $numPlaces = count(Place::findPlacesByLanding($model->landing_id));
+                    return $numPlaces;
                 }
             ],
             // 'about_text:ntext',

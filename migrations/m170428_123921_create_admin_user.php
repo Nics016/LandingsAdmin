@@ -22,12 +22,30 @@ class m170428_123921_create_admin_user extends Migration
         $testUser->generatePasswordHash('333777');
         $testUser->generateAuthKey();
         $testUser->save();
+
+        $testUser = new User();
+        $testUser->username = 'test_manager';
+        $testUser->email = 'manager@testusers.com';
+        $testUser->role = User::ROLE_MANAGER;
+        $testUser->generatePasswordHash('555666888');
+        $testUser->generateAuthKey();
+        $testUser->save();
+
+        $testUser = new User();
+        $testUser->username = 'test_admin';
+        $testUser->email = 'admin@testusers.com';
+        $testUser->role = User::ROLE_ADMIN;
+        $testUser->generatePasswordHash('555666888');
+        $testUser->generateAuthKey();
+        $testUser->save();
     }
 
     public function down()
     {
         User::findByUsername('admin')->delete();
         User::findByUsername('manager')->delete();
+        User::findByUsername('test_manager')->delete();
+        User::findByUsername('test_admin')->delete();
         return true;
     }
 

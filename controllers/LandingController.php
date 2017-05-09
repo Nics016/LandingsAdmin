@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Landing;
+use app\models\Place;
+use app\models\AskPlaces;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -50,7 +52,7 @@ class LandingController extends Controller
                         ],
                     ],
                     [
-                        'actions' => ['create', 'index', 'update', 'view', 'delete'],
+                        'actions' => ['ask-places', 'create', 'index', 'update', 'view', 'delete'],
                         'allow' => true,
                         // Allow only admin
                         'roles' => [
@@ -90,31 +92,60 @@ class LandingController extends Controller
     }
 
     /**
+     * Page which is shown before 'create'
+     * to ask how many places should there be.
+     */
+    public function actionAskPlaces()
+    {
+        $model = new AskPlaces();
+
+        if ($model->load(Yii::$app->request->post())) {
+            return $this->redirect(['create', 'numPlaces' => $model->numPlaces]);
+        } else {
+            return $this->render('ask-places', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    /**
      * Creates a new Landing model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($numPlaces)
     {
-        // return $this->renderContent($_SERVER['DOCUMENT_ROOT'].'/landigs/web/uploads');
         $model = new Landing();
 
         if ($model->load(Yii::$app->request->post())) {
-            // getting paths for files
-            $model->object_photo_file = UploadedFile::getInstance($model, 'object_photo_file');
-            $model->object_photo = $model->generateFileName($model->object_photo_file);
+            // Uploading files for places
+            // $model->object_photos_files = UploadedFile::getInstances($model, 'object_photos_files[1]');
+            // return $this->renderContent(print_r($model->object_photos_files));
 
-            $model->photos_files = UploadedFile::getInstances($model, 'photos_files');
-            $model->photos = $model->generateJsonArray($model->photos_files);
-            $model->arendator_photos_files = UploadedFile::getInstances($model, 'arendator_photos_files');
-            $model->arendator_photos = $model->generateJsonArray($model->arendator_photos_files);
+            $model->convertFilesArrayToJson(
+                $model,
+                'object_photos_files',
+                'object_photos',
+                $numPlaces
+            );
+            $model->photos = $model->convertFilesToJson(
+                $model,
+                'photos_files'                
+            );
+            $model->arendator_photos = $model->convertFilesToJson(
+                $model,
+                'arendator_photos_files'
+            );
 
-            if ($model->save()){
+            if ($model->save(false)){
                 // saving files on server
-                if ($model->object_photo)
-                    $model->object_photo_file->saveAs($model->object_photo);
+                for($i = 0; $i < $numPlaces; $i++){
+                    $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
+                }
                 $model->saveFilesByJsonArray($model->photos_files, $model->photos);
                 $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
+
+                $model->createPlaces($model, $numPlaces);
 
                 return $this->redirect(['view', 'id' => $model->landing_id]);
             }
@@ -124,6 +155,7 @@ class LandingController extends Controller
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'numPlaces' => $numPlaces,
             ]);
         }
     }
@@ -139,9 +171,9 @@ class LandingController extends Controller
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
             // getting paths for files
-            $model->object_photo_file = UploadedFile::getInstance($model, 'object_photo_file');
-            if ($model->object_photo_file !== null)
-                $model->object_photo = $model->generateFileName($model->object_photo_file);
+            // $model->object_photos_files = UploadedFile::getInstance($model, 'object_photos_files');
+            // if ($model->object_photo_file !== null)
+                // $model->object_photo = $model->generateFileName($model->object_photo_file);
 
             $model->photos_files = UploadedFile::getInstances($model, 'photos_files');
             if (count($model->photos_files) > 0)
@@ -152,8 +184,8 @@ class LandingController extends Controller
 
             if ($model->save()){
                 // saving files on server
-                if ($model->object_photo_file)
-                    $model->object_photo_file->saveAs($model->object_photo);
+                // if ($model->object_photo_file)
+                    // $model->object_photo_file->saveAs($model->object_photo);
                 if (count($model->photos_files) > 0)
                     $model->saveFilesByJsonArray($model->photos_files, $model->photos);
                 if (count($model->arendator_photos_files) > 0)

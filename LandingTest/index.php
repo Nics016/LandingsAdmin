@@ -46,10 +46,7 @@
 	<header id="header">
 		<h1 style="text-align: center;"><?= $data['title'] ?></h1>
 	</header>
-
 	
-
-
 	<!--CONTENT-->
 	<div class="content">
 

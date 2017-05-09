@@ -6,6 +6,8 @@ use yii\widgets\DetailView;
 
 use app\models\User;
 use app\models\UserLanding;
+use app\models\Place;
+use app\models\PlaceLanding;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Landing */
@@ -55,77 +57,23 @@ if (UserLanding::userHasAccessToLanding(Yii::$app->user->identity->id, $model->l
                     return $returnUl;
                 }
             ],
-            'meters',
-            'floor',
             [
-                'attribute' => 'state',
-                'value' => function($model){
-                    switch($model['state']){
-                        case $model::STATE_READY:
-                            return "готово к въезду";
-                            break;
-
-                        case $model::STATE_OTDELKA:
-                            return "под отделку";
-                            break;
-
-                        case $model::STATE_CLEAR_OTDELKA:
-                            return "под чистовую отделку";
-                            break;
-
-                        case $model::STATE_SELLING:
-                            return "продажа";
-                            break;
-
-                    }
-                }
-            ],
-            [
-                'attribute' => 'planning',
-                'value' => function($model){
-                    switch($model['price_sign']){
-                        case $model::PLANNING_OPEN:
-                            return "открытая";
-                            break;
-
-                        case $model::PLANNING_MIXED:
-                            return "смешанная";
-                            break;
-
-                        case $model::PLANNING_CABINET:
-                            return "кабинетная";
-                            break;
-                    }
-                }
-            ],
-            'price',
-            [
-                'attribute' => 'price_sign',
-                'value' => function($model){
-                    switch($model['price_sign']){
-                        case $model::PRICE_SIGN_RUB:
-                            return "Руб";
-                            break;
-
-                        case $model::PRICE_SIGN_DOL:
-                            return "$";
-                            break;
-
-                        case $model::PRICE_SIGN_EUR:
-                            return "€";
-                            break;
-                    }
-                }
-            ],
-            [
-                'attribute' => 'object_photo',
+                'label' => 'Помещения',
                 'format' => 'html',
                 'value' => function($model){
-                    if ($model->object_photo)
-                        return
-                            Html::img($model->object_photo, ['style' => 'max-width: 600px']);
-                    return 
-                        'Нет фото';
+                    $returnUl = '<ol>';
+                    $places = Place::findPlacesByLanding($model->landing_id);
+                    foreach($places as $place){
+                        $returnUl .= '<li>';
+                            $returnUl .= '<ul>';
+                            $returnUl .= Place::generateLi($place);
+                            $returnUl .= '</ul>';
+                        $returnUl .= '</li>';
+                    }
+                    $returnUl .= '</ol>';
+                    if ($returnUl === '<ol></ol>')
+                        $returnUl = 'нет';
+                    return $returnUl;
                 }
             ],
             [

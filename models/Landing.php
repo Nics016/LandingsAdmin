@@ -4,6 +4,9 @@ namespace app\models;
 
 use Yii;
 use yii\helpers\Url;
+use yii\web\UploadedFile;
+use app\models\Place;
+use app\models\PlaceLanding;
 
 /**
  * This is the model class for table "landing".
@@ -47,9 +50,24 @@ class Landing extends \yii\db\ActiveRecord
     ////////////////
     // Properties //
     ////////////////
-    public $object_photo_file;
+    /**
+     * Used for places
+     */
+    public $meters;
+    public $floor;
+    public $state;
+    public $planning;
+    public $price;
+    public $price_sign;
+
+    /**
+     * Used for files
+     */
+    public $object_photos;
+    public $object_photos_files;
     public $photos_files;
     public $arendator_photos_files;
+    
 
     /**
      * @inheritdoc
@@ -65,15 +83,17 @@ class Landing extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['meters', 'state', 'planning', 'price', 'price_sign'], 'integer'],
+            ['meters', 'number'],
+            [['state', 'planning', 'price', 'price_sign'], 'integer'],
             [['floor', 'about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text'], 'required'],
             [['about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text'], 'string'],
             [['title', 'floor'], 'string', 'max' => 32],
             [
-                'object_photo_file', // variable name
+                'object_photos_files', // variable name
                 'file', // type
                 'skipOnEmpty' => true,
                 'extensions' => ['png', 'jpg', 'gif', 'svg', 'jpeg'],
+                'maxFiles' => 10,
             ],
             [
                 ['photos', 'arendator_photos'],
@@ -86,7 +106,31 @@ class Landing extends \yii\db\ActiveRecord
     }
 
     /**
-     * Генерирует имя файла из переменной файла
+     * На основе данных модели Лэндинга создает записи 
+     * в таблицах Place и PlaceLanding.
+     *
+     * @param $model app\models\Landing
+     * @param $numPlaces integer количество создаваемых площадок
+     */
+    public function createPlaces($model, $numPlaces)
+    {
+        for($i = 0; $i < $numPlaces; $i++){
+            $modelPlace = new Place();
+            $modelPlace->landing_id = $model->landing_id;
+            $modelPlace->meters = $model->meters[$i];
+            $modelPlace->floor = $model->floor[$i];
+            $modelPlace->state = $model->state[$i];
+            $modelPlace->planning = $model->planning[$i];
+            $modelPlace->price = $model->price[$i];
+            $modelPlace->price_sign = $model->price_sign[$i];
+            $modelPlace->object_photos = $model->object_photos[$i];
+            $modelPlace->save(false);
+        }
+    }
+
+    /**
+     * Генерирует имя файла из переменной файла.
+     * 
      * @param  yii\web\UploadedFile $file файл
      * @return string       имя файла, которое будет в БД
      */
@@ -99,6 +143,46 @@ class Landing extends \yii\db\ActiveRecord
                 . $file->baseName . '.' . $file->extension;
         }
         return $answ;
+    }
+
+    /**
+     * Функция создана для уменьшения количества повторяемого кода.
+     *
+     * Из экземпляров загруженных файлов генерирует массив JSON
+     * и возвращает его.
+     * 
+     * @param $model app\models\Landing
+     * @param  string $attrName аттрибут файлов
+     * @return JsonArrayString        возвращаемая строка - json
+     */
+    public function convertFilesToJson(&$model, $attrName)
+    {
+        $model[$attrName] = UploadedFile::getInstances($model, $attrName);
+
+        return $this->generateJsonArray($model[$attrName]);
+    }
+
+    /**
+     * Версия предыдущей функции для случая, когда необходимо
+     * обработать массив файлов (массив массивов файлов).
+     * 
+     * @param  app\models\Landing &$model   
+     * @param  string $attrName аттрибут файлов
+     * @param  string $attrJson аттрибут JSON
+     * @param  integer $num     количество массивов файлов
+     */
+    public function convertFilesArrayToJson(&$model, $attrName, $attrJson, $num)
+    {
+        $newAttrNameArray = [];
+        $newAttrNameJsonArray = [];
+        for ($i = 0; $i < $num; $i++){
+            $newAttrNameArray[$i] = UploadedFile::getInstances(
+                $model, $attrName . '[' . $i . ']');
+
+            $newAttrNameJsonArray[$i] = $this->generateJsonArray($newAttrNameArray[$i]);
+        }
+        $model[$attrName] = $newAttrNameArray;
+        $model[$attrJson] = $newAttrNameJsonArray;
     }
 
     /**
@@ -146,20 +230,12 @@ class Landing extends \yii\db\ActiveRecord
         return [
             'landing_id' => 'Landing ID',
             'title' => 'Название',
-            'meters' => 'Метраж',
-            'floor' => 'Этаж',
-            'state' => 'Состояние',
-            'planning' => 'Планировка',
-            'price' => 'Ставка',
-            'price_sign' => 'Валюта',
             'about_text' => 'Об объекте',
             'characteristics_text' => 'Характеристики',
             'news_text' => 'Новости',
             'infostructure_text' => 'Инфраструктура',
             'location_text' => 'Расположение',
             'contacts_text' => 'Контакты',
-            'object_photo_file' => 'Фотография объекта',
-            'object_photo' => 'Фотография объекта',
             'photos_files' => 'Фотографии (можно выбрать несколько файлов)',
             'arendator_photos_files' => 'Арендаторы (можно выбрать несколько файлов)',
         ];
