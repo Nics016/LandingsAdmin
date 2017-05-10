@@ -16,6 +16,7 @@ use yii\filters\AccessControl;
 use app\models\User;
 use yii\web\Response;
 use yii\web\UploadedFile;
+use yii\helpers\Url;
 
 /**
  * LandingController implements the CRUD actions for Landing model.
@@ -71,6 +72,7 @@ class LandingController extends Controller
      */
     public function actionIndex()
     {
+        // return $this->renderContent(Url::base(true));
         $dataProvider = new ActiveDataProvider([
             'query' => Landing::find(),
         ]);
@@ -164,13 +166,16 @@ class LandingController extends Controller
             if ($model->save(false)){
                 // saving files on server
                 for($i = 0; $i < $numPlaces; $i++){
-                    $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
+                    $model->object_photos[$i] = $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
                 }
-                $model->saveFilesByJsonArray($model->photos_files, $model->photos);
-                $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
+                $model->photos = $model->saveFilesByJsonArray($model->photos_files, $model->photos);
+                $model->arendator_photos = $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
 
                 $model->createPlaces($model, $numPlaces);
 
+                // saving updated absolute urls
+                $model->save(false);
+                
                 return $this->redirect(['view', 'id' => $model->landing_id]);
             }
             else 

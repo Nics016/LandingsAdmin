@@ -86,7 +86,7 @@ class Landing extends \yii\db\ActiveRecord
                 'file', 
                 'skipOnEmpty' => true,
                 'extensions' => ['png', 'jpg', 'gif', 'svg', 'jpeg'],
-                'maxFiles' => 5,
+                'maxFiles' => 10,
             ],
         ];
     }
@@ -212,6 +212,8 @@ class Landing extends \yii\db\ActiveRecord
 
     /**
      * Сохраняет файлы первого массива по путям второго массива
+     *
+     * После этого ссылки на файлы во втором массиве конвертируются в абсолютные
      * @param  yii\web\UploadedFile $files             файлы
      * @param  JsonArrayString $fileNameArrayJson массив в формате Json путей файлов
      * @return boolean                    результат
@@ -224,12 +226,26 @@ class Landing extends \yii\db\ActiveRecord
                 if ($files[$i]){
                     $result = $files[$i]->saveAs($fileNameArray[$i]);
                     if (!$result)
-                        return false;
+                        return 'error';
                 }
             }
-        }
 
-        return true;
+            // After saving we convert links in array to absolute
+            for ($i = 0; $i < count($fileNameArray); $i++){
+                $fileNameArray[$i] = $this->toAbsolute($fileNameArray[$i]);
+            }
+            $newFileNameArrayJson = json_encode($fileNameArray);
+            return $newFileNameArrayJson;
+        }
+        
+        return '';
+    }
+
+    /**
+     * Преобразует ссылку в абсолютную
+     */
+    public function toAbsolute($url){
+        return Url::base(true) . '/' . $url;
     }
 
     /**

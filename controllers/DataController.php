@@ -69,6 +69,7 @@
 			$u_id = Yii::$app->user->identity->id;
 			if (UserLanding::userHasAccessToLanding($u_id, $id)){
 				$data = Landing::findOne($id);
+				// Landing::convertLinksToAbsolute($data);
 			}
 			else
 				return "У вас нет доступа к этому сайту";
