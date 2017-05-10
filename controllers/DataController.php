@@ -68,8 +68,10 @@
 			// firstly chech whether user has access to this landing
 			$u_id = Yii::$app->user->identity->id;
 			if (UserLanding::userHasAccessToLanding($u_id, $id)){
-				$data = Landing::findOne($id);
-				// Landing::convertLinksToAbsolute($data);
+				$landing = Landing::findOne($id);
+				$data = [];
+				$data['landing'] = $landing;
+				$data['places'] = Landing::getLandingPlaces($id);
 			}
 			else
 				return "У вас нет доступа к этому сайту";

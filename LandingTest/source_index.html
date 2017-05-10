@@ -1,53 +1,17 @@
-<?php 
-	namespace landing;
-
-	require('Place.php');
-
-	use landing\Place;
-
-	function getData(){
-		$url="http://landings.devcloud.pro/?r=data/get-landing-data&id=18";
-		$username = "manager";
-		$password = "333777";
-
-		//  Initiate curl
-		$ch = curl_init();
-		// Disable SSL verification
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		// Will return the response, if false it print the response
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		// Set the url
-		curl_setopt($ch, CURLOPT_URL,$url);
-		// Set data for auth
-		curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-
-		// Execute
-		$exec_result=curl_exec($ch);
-		$result = json_decode($exec_result, true);
-		// Closing
-		curl_close($ch);
-
-		return $result;
-	}
-
-	$data = getData();
-	$landing = $data['landing'];
-	$places = $data['places'];
- ?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?= $landing['title'] ?></title>
+	<title>Title</title>
 	<link href="css/plagins.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
 	<link href="css/style750.css" rel="stylesheet">
 	<link href="css/style320.css" rel="stylesheet">
 </head>
 <body>
+
 
 <div id="main">
 	<header id="header">
@@ -56,12 +20,7 @@
 				<h1 class="logo">
 					<a href="#">
 						<span>бизнес-центр</span>
-							
-						<?php if (is_array($data)): ?>
-							<?= $landing['title'] ?>
-						<?php else: ?>
-							<?= $data ?>
-						<?php endif; ?>
+						Skylight
 					</a>
 				</h1>
 				<div class="head_phone">
@@ -123,29 +82,206 @@
 						<th>Планировка</th>
 						<th>Фото</th>
 					</tr>
-					<?php foreach($places as $place): ?>
-						<tr>
-							<td><?= $place['meters'] ?></td>
-							<td><?= $place['floor'] ?></td>
-							<td><?= $place['price'] ?> <?= Place::getDdlText($place['price_sign'], Place::PRICE_SIGN) ?></td>
-							<td><?= Place::getDdlText($place['state'], Place::STATE) ?></td>
-							<td><?= Place::getDdlText($place['planning'], Place::PLANNING) ?></td>
-							<td><span class="underline">Фото</span></td>
-						</tr>
-						<tr class="tbl_hidden">
-							<td colspan="6">
-								<div class="free_photo">
-									<ul class="list_photo">
-										<?php foreach(json_decode($place['object_photos']) as $photo): ?>
-										<li>
-											<a href="<?= $photo ?>" rel="group1"><img src="<?= $photo ?>" alt=""></a>
-										</li>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-							</td>
-						</tr>
-					<?php endforeach; ?>
+					<tr>
+						<td>771</td>
+						<td>3</td>
+						<td>32 203 руб.</td>
+						<td>С отделкой</td>
+						<td></td>
+						<td><span class="underline">Фото</span></td>
+					</tr>
+					<tr class="tbl_hidden">
+						<td colspan="6">
+							<div class="free_photo">
+								<ul class="list_photo">
+									<li>
+										<a href="img/img_photo_1.jpg" rel="group1"><img src="img/img_photo_1.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_2.jpg" rel="group1"><img src="img/img_photo_2.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_3.jpg" rel="group1"><img src="img/img_photo_3.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_4.jpg" rel="group1"><img src="img/img_photo_4.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_5.jpg" rel="group1"><img src="img/img_photo_5.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_6.jpg" rel="group1"><img src="img/img_photo_6.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_7.jpg" rel="group1"><img src="img/img_photo_7.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_8.jpg" rel="group1"><img src="img/img_photo_8.jpg" alt=""></a>
+									</li>
+								</ul>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>535</td>
+						<td>4</td>
+						<td>32 203 руб.</td>
+						<td>С отделкой</td>
+						<td></td>
+						<td><span class="underline">Фото</span></td>
+					</tr>
+					<tr class="tbl_hidden">
+						<td colspan="6">
+							<div class="free_photo">
+								<ul class="list_photo">
+									<li>
+										<a href="img/img_photo_1.jpg" rel="group2"><img src="img/img_photo_1.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_2.jpg" rel="group2"><img src="img/img_photo_2.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_3.jpg" rel="group2"><img src="img/img_photo_3.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_4.jpg" rel="group2"><img src="img/img_photo_4.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_5.jpg" rel="group2"><img src="img/img_photo_5.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_6.jpg" rel="group2"><img src="img/img_photo_6.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_7.jpg" rel="group2"><img src="img/img_photo_7.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_8.jpg" rel="group2"><img src="img/img_photo_8.jpg" alt=""></a>
+									</li>
+								</ul>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>1153.2</td>
+						<td>10</td>
+						<td>32 203 руб.</td>
+						<td>С отделкой</td>
+						<td></td>
+						<td><span class="underline">Фото</span></td>
+					</tr>
+					<tr class="tbl_hidden">
+						<td colspan="6">
+							<div class="free_photo">
+								<ul class="list_photo">
+									<li>
+										<a href="img/img_photo_1.jpg" rel="group3"><img src="img/img_photo_1.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_2.jpg" rel="group3"><img src="img/img_photo_2.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_3.jpg" rel="group3"><img src="img/img_photo_3.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_4.jpg" rel="group3"><img src="img/img_photo_4.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_5.jpg" rel="group3"><img src="img/img_photo_5.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_6.jpg" rel="group3"><img src="img/img_photo_6.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_7.jpg" rel="group3"><img src="img/img_photo_7.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_8.jpg"><img src="img/img_photo_8.jpg" alt=""></a>
+									</li>
+								</ul>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>1101.8</td>
+						<td>17</td>
+						<td>32 203 руб.</td>
+						<td>С отделкой</td>
+						<td></td>
+						<td><span class="underline">Фото</span></td>
+					</tr>
+					<tr class="tbl_hidden">
+						<td colspan="6">
+							<div class="free_photo">
+								<ul class="list_photo">
+									<li>
+										<a href="img/img_photo_1.jpg" rel="group4"><img src="img/img_photo_1.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_2.jpg" rel="group4"><img src="img/img_photo_2.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_3.jpg" rel="group4"><img src="img/img_photo_3.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_4.jpg" rel="group4"><img src="img/img_photo_4.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_5.jpg" rel="group4"><img src="img/img_photo_5.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_6.jpg" rel="group4"><img src="img/img_photo_6.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_7.jpg" rel="group4"><img src="img/img_photo_7.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_8.jpg" rel="group4"><img src="img/img_photo_8.jpg" alt=""></a>
+									</li>
+								</ul>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>690.3</td>
+						<td>19</td>
+						<td> 32 203 руб.</td>
+						<td>С отделкой</td>
+						<td></td>
+						<td><span class="underline">Фото</span></td>
+					</tr>
+					<tr class="tbl_hidden">
+						<td colspan="6">
+							<div class="free_photo">
+								<ul class="list_photo">
+									<li>
+										<a href="img/img_photo_1.jpg" rel="group5"><img src="img/img_photo_1.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_2.jpg" rel="group5"><img src="img/img_photo_2.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_3.jpg" rel="group5"><img src="img/img_photo_3.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_4.jpg" rel="group5"><img src="img/img_photo_4.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_5.jpg" rel="group5"><img src="img/img_photo_5.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_6.jpg" rel="group5"><img src="img/img_photo_6.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_7.jpg" rel="group5"><img src="img/img_photo_7.jpg" alt=""></a>
+									</li>
+									<li>
+										<a href="img/img_photo_8.jpg" rel="group5"><img src="img/img_photo_8.jpg" alt=""></a>
+									</li>
+								</ul>
+							</div>
+						</td>
+					</tr>
 				</table>
 				<form>
 				<div class="form_page">

@@ -86,7 +86,7 @@ class Landing extends \yii\db\ActiveRecord
                 'file', 
                 'skipOnEmpty' => true,
                 'extensions' => ['png', 'jpg', 'gif', 'svg', 'jpeg'],
-                'maxFiles' => 10,
+                'maxFiles' => 20,
             ],
         ];
     }
@@ -135,6 +135,21 @@ class Landing extends \yii\db\ActiveRecord
                 $modelPlace->object_photos = '';
             $modelPlace->save(false);
         }
+    }
+
+    /**
+     * Возвращает площадки лэндинга.
+     *
+     * @param  $id integer - id лэндинга 
+     * @return array of app\models\Place Площадки
+     */
+    public function getLandingPlaces($land_id)
+    {
+        $places = Place::find()
+            ->where('landing_id=' . $land_id)
+            ->all();
+
+        return $places;
     }
 
     /**

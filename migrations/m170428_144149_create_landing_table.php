@@ -21,10 +21,14 @@ class m170428_144149_create_landing_table extends Migration
         $this->createTable('landing', [
             'landing_id' => $this->primaryKey(),
             'title' => $this->string(32),
+            'phone' => $this->string(32),
+            'address' => $this->string(128),
+            'email' => $this->string(128),
 
             'about_text' => $this->text()->notNull(),
             'characteristics_text' => $this->text()->notNull(),
             'photos' => $this->text(),
+            'bg_photo' => $this->text(),
             'news_text' => $this->text()->notNull(),
             'infostructure_text' => $this->text()->notNull(),
             'arendator_photos' => $this->text(),

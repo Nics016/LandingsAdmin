@@ -72,7 +72,7 @@ class LandingController extends Controller
      */
     public function actionIndex()
     {
-        // return $this->renderContent(Url::base(true));
+        // return $this->renderContent(Place::test());
         $dataProvider = new ActiveDataProvider([
             'query' => Landing::find(),
         ]);
@@ -173,9 +173,9 @@ class LandingController extends Controller
 
                 $model->createPlaces($model, $numPlaces);
 
-                // saving updated absolute urls
+                // Saving updated absolute urls
                 $model->save(false);
-                
+
                 return $this->redirect(['view', 'id' => $model->landing_id]);
             }
             else 
