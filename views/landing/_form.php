@@ -17,6 +17,7 @@ use dosamigos\tinymce\TinyMce;
 
 // Generating different labels on Update action to show images
     // $object_photos_label = $model->getAttributeLabel('object_photos');
+    $bg_photo_label = $model->getAttributeLabel('bg_photo_file');
     $object_photos_label = $model->getAttributeLabel('photos_files');
     $object_arendator_photos_label = $model->getAttributeLabel('arendator_photos_files');
     // on Update we attach existing images to labels
@@ -25,11 +26,14 @@ use dosamigos\tinymce\TinyMce;
         // .  $model->object_photos
         // . '">';
 
+        if ($model->bg_photo)
+            $bg_photo_label .= Html::img($model->bg_photo, ['style' => 'max-width: 400px']).'<br>'.'<br>';
+
         $photos = json_decode($model->photos);
         if ($photos){
             $answ = '<br>';
             foreach ($photos as $photo){
-                $answ .= Html::img($photo, ['style' => 'max-width: 600px']).'<br>'.'<br>';
+                $answ .= Html::img($photo, ['style' => 'max-width: 400px']).'<br>'.'<br>';
             }
             $object_photos_label .= $answ;
         }
@@ -38,7 +42,7 @@ use dosamigos\tinymce\TinyMce;
         if ($photos){
             $answ = '<br>';
             foreach ($photos as $photo){
-                $answ .= Html::img($photo, ['style' => 'max-width: 600px']).'<br>'.'<br>';
+                $answ .= Html::img($photo, ['style' => 'max-width: 400px']).'<br>'.'<br>';
             }
             $object_arendator_photos_label .= $answ;
         }
@@ -64,6 +68,11 @@ use dosamigos\tinymce\TinyMce;
     <?php if ($model->isNewRecord || Yii::$app->user->identity->role == User::ROLE_ADMIN): ?>
         <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
     <?php endif; ?>
+    <?= $form->field($model, 'building_type')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+     <?= $form->field($model, 'bg_photo_file')->fileInput()->label($bg_photo_label) ?>
 
     <table class="table">
         <thead class="thead-inverse">

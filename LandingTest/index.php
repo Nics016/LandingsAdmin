@@ -2,37 +2,45 @@
 	namespace landing;
 
 	require('Place.php');
+	require('LandingService.php');
 
 	use landing\Place;
+	use landing\LandingService;
 
-	function getData(){
-		$url="http://landings.devcloud.pro/?r=data/get-landing-data&id=18";
-		$username = "manager";
-		$password = "333777";
-
-		//  Initiate curl
-		$ch = curl_init();
-		// Disable SSL verification
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		// Will return the response, if false it print the response
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		// Set the url
-		curl_setopt($ch, CURLOPT_URL,$url);
-		// Set data for auth
-		curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-
-		// Execute
-		$exec_result=curl_exec($ch);
-		$result = json_decode($exec_result, true);
-		// Closing
-		curl_close($ch);
-
-		return $result;
-	}
-
-	$data = getData();
+	// Получение данных о сайте
+	$id = '1';
+	$username = 'test_manager';
+	$pass = '555666888';
+	$data = LandingService::getData(
+		$id,
+		$username,
+		$pass
+	);
 	$landing = $data['landing'];
 	$places = $data['places'];
+
+	// Обработка заявок
+	if (isset($_POST['client_name'])){
+		$client_name = LandingService::check_input($_POST['client_name']);
+		if (isset($_POST['client_msg']))
+			$client_msg = LandingService::check_input($_POST['client_msg']);
+		if (isset($_POST['client_email']))
+			$client_email = LandingService::check_input($_POST['client_email']);
+		$msg = "<h1 style='color:green'>Поступило новое сообщение на вашем сайте!</h1><br>";
+		if (isset($_POST['client_email']))
+			$msg = "<h1 style='color:green'>Поступила новая заявка на вашем сайте!</h1><br>";
+		 		$msg .= "<h2> Имя - ".$client_name."</h2>";
+		 		if (isset($_POST['client_email']))
+		 			$msg .= "<h2> Email - ".$client_email."</h2>";
+				if (isset($_POST['client_msg']))
+		 			$msg .= "<h2> Сообщение : ".$client_msg."</h2>";
+		$topic = 'Пришло новое сообщение на вашем сайте "' . $landing['title'] . '"';
+		if (isset($_POST['client_email']))
+			$topic = 'Поступила новая заявка на вашем сайте "' . $landing['title'] . '"!';
+		$email = $landing['email'];
+		LandingService::SendEmail($msg, $topic, $email);
+		echo 'Ваше сообщение было успешно отправлено. Спасибо!';		
+	}
  ?>
 
 <!DOCTYPE html>
@@ -41,7 +49,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?= $landing['title'] ?></title>
+	<title><?= $landing['building_type'] ?> <?= $landing['title'] ?></title>
 	<link href="css/plagins.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
 	<link href="css/style750.css" rel="stylesheet">
@@ -55,7 +63,7 @@
 			<div class="header_box">
 				<h1 class="logo">
 					<a href="#">
-						<span>бизнес-центр</span>
+						<span><?= $landing['building_type'] ?></span>
 							
 						<?php if (is_array($data)): ?>
 							<?= $landing['title'] ?>
@@ -66,15 +74,14 @@
 				</h1>
 				<div class="head_phone">
 					Отдел аренды
-					<span class="phone"><a href="tel:">8 (495) 637-84-54</a></span>
+					<span class="phone"><a href="tel:"><?= $landing['phone'] ?></a></span>
 				</div>
 				<span class="head_address">
-					м.Аэропорт, <br>
-					Ленинградский проспект д.39
+					<?= $landing['address'] ?>
 				</span>
 			</div>
 		</div>
-		<div class="header_bot">
+		<div class="header_bot" style="background: url(<?= $landing['bg_photo'] ?>)">
 			<div class="header_btn">
 				<div class="header_box">
 					<div class="header_bot_col">
@@ -112,7 +119,7 @@
 			<div class="content_box">
 				<div class="head_title">
 					<h2>Свободные площади</h2>
-					<p>Свободные площади <strong><a href="tel:" class="tel">8 (495) 637-84-54</a></strong></p>
+					<p>Свободные площади <strong><a href="tel:" class="tel"><?= $landing['phone'] ?></a></strong></p>
 				</div>
 				<table class="tbl_free">
 					<tr>
@@ -125,9 +132,9 @@
 					</tr>
 					<?php foreach($places as $place): ?>
 						<tr>
-							<td><?= $place['meters'] ?></td>
+							<td><?= LandingService::stripZero($place['meters']) ?></td>
 							<td><?= $place['floor'] ?></td>
-							<td><?= $place['price'] ?> <?= Place::getDdlText($place['price_sign'], Place::PRICE_SIGN) ?></td>
+							<td><?= LandingService::proccessPrice($place['price']) ?> <?= Place::getDdlText($place['price_sign'], Place::PRICE_SIGN) ?></td>
 							<td><?= Place::getDdlText($place['state'], Place::STATE) ?></td>
 							<td><?= Place::getDdlText($place['planning'], Place::PLANNING) ?></td>
 							<td><span class="underline">Фото</span></td>
@@ -147,15 +154,15 @@
 						</tr>
 					<?php endforeach; ?>
 				</table>
-				<form>
+				<form method="POST">
 				<div class="form_page">
 					<label>Ваше имя *</label>
 					<div class="in_box">
-						<input type="text" class="tx">
+						<input type="text" class="tx" name="client_name">
 					</div>
 					<label>Собщение</label>
 					<div class="in_box">
-						<textarea></textarea>
+						<textarea name="client_msg"></textarea>
 					</div>
 					<button class="btn_blue" type="submit">Отправить</button>
 				</div>
@@ -171,51 +178,11 @@
 					<h2>ФОТОГАЛЕРЕЯ</h2>
 				</div>
 				<ul class="list_photo">
+					<?php foreach(json_decode($landing['photos']) as $photo): ?>
 					<li>
-						<a href="img/img_photo_1.jpg" rel="galery"><img src="img/img_photo_1.jpg" alt=""></a>
+						<a href="<?= $photo ?>" rel="galery"><img src="<?= $photo ?>" alt=""></a>
 					</li>
-					<li>
-						<a href="img/img_photo_2.jpg" rel="galery"><img src="img/img_photo_2.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_3.jpg" rel="galery"><img src="img/img_photo_3.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_4.jpg" rel="galery"><img src="img/img_photo_4.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_5.jpg" rel="galery"><img src="img/img_photo_5.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_6.jpg" rel="galery"><img src="img/img_photo_6.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_7.jpg" rel="galery"><img src="img/img_photo_7.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_8.jpg" rel="galery"><img src="img/img_photo_8.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_1.jpg" rel="galery"><img src="img/img_photo_1.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_2.jpg" rel="galery"><img src="img/img_photo_2.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_3.jpg" rel="galery"><img src="img/img_photo_3.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_4.jpg" rel="galery"><img src="img/img_photo_4.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_5.jpg" rel="galery"><img src="img/img_photo_5.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_6.jpg" rel="galery"><img src="img/img_photo_6.jpg" alt=""></a>
-					</li>
-					<li>
-						<a href="img/img_photo_7.jpg" rel="galery"><img src="img/img_photo_7.jpg" alt=""></a>
-					</li>
+				<?php endforeach; ?>					
 				</ul>
 			</div>
 		</section>
@@ -226,7 +193,7 @@
 				<div class="head_title">
 					<h2>Об объекте</h2>
 				</div>
-				<p>Новый офисный комплекс, состоящий из трех офисных блоков, расположенных на единой стилобатной части. Общая площадь всего комплекса - 77 500 кв. м. 28-этажная башня (Блок 1) общей площадью 28 426 кв. м, специально спроектированная для размещения головного офиса крупной компании, является отдельной частью комплекса. Офисная часть башни составляет 18 556,84 кв. м. На 5-ти подземных уровнях здания расположены специализированные помещения широкого назначения, включая организацию сертифицированного хранилища. Панорамное остекление. Развитая инфраструктура. Столовая для арендаторов. Площадь типового этажа 400-1073 кв. м. Высота потолков - 3,9 м. Блок 1 оснащен вертолетной площадкой и обособленным VIP-паркингом на 7 м/м с отдельным лифтом и въездом. <br> Комплекс расположен между станциями метро Красные Ворота и Комсомольская. Непосредственный доступ к Бульварному и Садовому Кольцу, а также Третье транспортное кольцо. Легкий доступ ко всегоем частям города.</p>
+				<?= $landing['about_text'] ?>
 			</div>
 		</section>
 
@@ -236,7 +203,7 @@
 				<div class="head_title">
 					<h2>характеристики</h2>
 				</div>
-				<p>Новый офисный комплекс, состоящий из трех офисных блоков, расположенных на единой стилобатной части. Общая площадь всего комплекса - 77 500 кв. м. 28-этажная башня (Блок 1) общей площадью 28 426 кв. м, специально спроектированная для размещения головного офиса крупной компании, является отдельной частью комплекса. Офисная часть башни составляет 18 556,84 кв. м. На 5-ти подземных уровнях здания расположены специализированные помещения широкого назначения, включая организацию сертифицированного хранилища. Панорамное остекление. Развитая инфраструктура. Столовая для арендаторов. Площадь типового этажа 400-1073 кв. м. Высота потолков - 3,9 м. Блок 1 оснащен вертолетной площадкой и обособленным VIP-паркингом на 7 м/м с отдельным лифтом и въездом. <br> Комплекс расположен между станциями метро Красные Ворота и Комсомольская. Непосредственный доступ к Бульварному и Садовому Кольцу, а также Третье транспортное кольцо. Легкий доступ ко всегоем частям города.</p>
+				<?= $landing['characteristics_text'] ?>
 			</div>
 		</section>
 
@@ -246,7 +213,7 @@
 				<div class="head_title">
 					<h2>Инфраструктура</h2>
 				</div>
-				<p>Новый офисный комплекс, состоящий из трех офисных блоков, расположенных на единой стилобатной части. Общая площадь всего комплекса - 77 500 кв. м. 28-этажная башня (Блок 1) общей площадью 28 426 кв. м, специально спроектированная для размещения головного офиса крупной компании, является отдельной частью комплекса. Офисная часть башни составляет 18 556,84 кв. м. На 5-ти подземных уровнях здания расположены специализированные помещения широкого назначения, включая организацию сертифицированного хранилища. Панорамное остекление. Развитая инфраструктура. Столовая для арендаторов. Площадь типового этажа 400-1073 кв. м. Высота потолков - 3,9 м. Блок 1 оснащен вертолетной площадкой и обособленным VIP-паркингом на 7 м/м с отдельным лифтом и въездом. <br> Комплекс расположен между станциями метро Красные Ворота и Комсомольская. Непосредственный доступ к Бульварному и Садовому Кольцу, а также Третье транспортное кольцо. Легкий доступ ко всегоем частям города.</p>
+				<?= $landing['infostructure_text'] ?>
 			</div>
 		</section>
 
@@ -256,7 +223,7 @@
 				<div class="head_title">
 					<h2>РАСПОЛОЖЕНИЕ</h2>
 				</div>
-				<p>5 минут ходьбы от м. Красные ворота. Комплекс расположен между станциями метро Красные Ворота и Комсомольская. Непосредственный доступ к Бульварному и Садовому Кольцу, а также Третье транспортное кольцо. Легкий доступ ко всем частям города.</p>
+				<?= $landing['location_text'] ?>
 			</div>
 			<div id="map"></div>
 		</section>
@@ -268,26 +235,13 @@
 					<h2>АРЕНДАТОРЫ БИЗНЕС-ЦЕНТРА</h2>
 				</div>
 				<ul class="list_partners">
+					<?php foreach(json_decode($landing['arendator_photos']) as $photo): ?>
 					<li>
 						<span class="partners_one">
-							<img src="img/img_partners_1.jpg" alt="">
+							<img src="<?= $photo ?>" alt="">
 						</span>
 					</li>
-					<li>
-						<span class="partners_one">
-							<img src="img/img_partners_2.jpg" alt="">
-						</span>
-					</li>
-					<li>
-						<span class="partners_one">
-							<img src="img/img_partners_3.jpg" alt="">
-						</span>
-					</li>
-					<li>
-						<span class="partners_one">
-							<img src="img/img_partners_4.jpg" alt="">
-						</span>
-					</li>
+					<?php endforeach; ?>
 				</ul>
 			</div>
 		</section>
@@ -299,15 +253,15 @@
 <div class="popup" id="p_form">
 	<div class="popup_box">
 		<a href="#" class="clouse_popup"></a>
-		<form>
+		<form method="POST">
 			<div class="form_page">
 				<label>Ваше имя *</label>
 				<div class="in_box">
-					<input type="text" class="tx">
+					<input type="text" class="tx" name="client_name">
 				</div>
 				<label>Эл. почта *</label>
 				<div class="in_box">
-					<input type="text" class="tx">
+					<input type="text" class="tx" name="client_email">
 				</div>
 				<button class="btn_blue" type="submit">Отправить</button>
 			</div>
@@ -326,5 +280,10 @@
 	<script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
 	<script src="js/plagins.js"></script>
 	<script src="js/scripts.js"></script>
+	<script>
+		var latitude = parseFloat(<?= $landing['latitude'] ?>);
+		var longitude = parseFloat(<?= $landing['longitude'] ?>);
+		generateMap(latitude, longitude);
+	</script>
 </body>
 </html>

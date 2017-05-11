@@ -1,3 +1,35 @@
+/*----------MAP-----------*/
+	function generateMap(latitude, longitude){
+		if ($('#map').size()) {
+			ymaps.ready(init);
+
+			function init () {
+				// Создание экземпляра карты и его привязка к контейнеру с
+				// заданным id ("map")
+				var myMap = new ymaps.Map('map', {
+						// При инициализации карты, обязательно нужно указать
+						// ее центр и коэффициент масштабирования
+						center: [latitude,longitude],  
+						zoom: 16
+					});
+				// Создание метки 
+				var myPlacemark = new ymaps.Placemark(
+					// Координаты метки
+				[latitude,longitude] , {
+				}, {
+					iconImageHref: 'img/ic_map.png', // картинка иконки
+					iconImageSize: [37, 42], // размеры картинки
+					iconImageOffset: [-18, -40] // смещение картинки
+				});
+				myMap.controls.add(
+					new ymaps.control.ZoomControl()
+				);
+				// Добавление метки на карту
+				myMap.geoObjects.add(myPlacemark);
+			}
+		}
+	}
+	
 $(document).ready(function(){ 
 	
 
@@ -107,37 +139,6 @@ $(document).ready(function(){
 	$('.popup_box').on( 'click', function(e){e.stopPropagation();});
 	// конец попап
 
-
-
-	/*----------MAP-----------*/
-	if ($('#map').size()) {
-		ymaps.ready(init);
-
-		function init () {
-			// Создание экземпляра карты и его привязка к контейнеру с
-			// заданным id ("map")
-			var myMap = new ymaps.Map('map', {
-					// При инициализации карты, обязательно нужно указать
-					// ее центр и коэффициент масштабирования
-					center: [55.7722,37.6485],  
-					zoom: 16
-				});
-			// Создание метки 
-			var myPlacemark = new ymaps.Placemark(
-				// Координаты метки
-			[55.7722,37.6485] , {
-			}, {
-				iconImageHref: 'img/ic_map.png', // картинка иконки
-				iconImageSize: [37, 42], // размеры картинки
-				iconImageOffset: [-18, -40] // смещение картинки
-			});
-			myMap.controls.add(
-				new ymaps.control.ZoomControl()
-			);
-			// Добавление метки на карту
-			myMap.geoObjects.add(myPlacemark);
-		}
-	}
 
 
 	// навигация с якорями

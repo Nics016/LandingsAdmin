@@ -21,6 +21,7 @@ class m170428_144149_create_landing_table extends Migration
         $this->createTable('landing', [
             'landing_id' => $this->primaryKey(),
             'title' => $this->string(32),
+            'building_type' => $this->text(),
             'phone' => $this->string(32),
             'address' => $this->string(128),
             'email' => $this->string(128),

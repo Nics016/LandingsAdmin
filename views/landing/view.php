@@ -42,6 +42,24 @@ if (UserLanding::userHasAccessToLanding(Yii::$app->user->identity->id, $model->l
         'attributes' => [
             'landing_id',
             'title',
+            'building_type',
+            'phone',
+            'address',
+            'email',
+            [
+                'attribute' => 'bg_photo',
+                'label' => 'Фотография фона',
+                'format' => 'html',
+                'value' => function($model){
+                    $photo = $model->bg_photo;
+                    if ($photo){
+                        $answ = Html::img($photo, ['style' => 'max-width: 600px']).'<br>'.'<br>';
+                        return
+                            $answ;
+                    }
+                    return 'Не задан';
+                }
+            ],
             [
                 'label' => 'К этому сайту имеют доступ менеджеры',
                 'format' => 'html',

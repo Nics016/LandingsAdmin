@@ -145,6 +145,10 @@ class LandingController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             // Uploading files for places
+            $model->bg_photo_file = UploadedFile::getInstance($model, 'bg_photo_file');
+            $model->bg_photo = $model->generateFileName(
+                $model->bg_photo_file
+            );
 
             $model->convertFilesArrayToJson(
                 $model,
@@ -166,8 +170,14 @@ class LandingController extends Controller
             if ($model->save(false)){
                 // saving files on server
                 for($i = 0; $i < $numPlaces; $i++){
-                    $model->object_photos[$i] = $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
+                    if(array_key_exists($i, $model->object_photos)){
+                        $model->object_photos[$i] = $model->saveFilesByJsonArray(
+                            $model->object_photos_files[$i], 
+                            $model->object_photos[$i]
+                        );
+                    }
                 }
+                $model->bg_photo = $model->saveFileByPath($model->bg_photo_file, $model->bg_photo);
                 $model->photos = $model->saveFilesByJsonArray($model->photos_files, $model->photos);
                 $model->arendator_photos = $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
 
@@ -201,6 +211,11 @@ class LandingController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             // Uploading files for places
+            $model->bg_photo_file = UploadedFile::getInstance($model, 'bg_photo_file');
+            if ($model->bg_photo_file)
+                $model->bg_photo = $model->generateFileName(
+                    $model->bg_photo_file
+                );
 
             $model->convertFilesArrayToJson(
                 $model,
@@ -225,10 +240,14 @@ class LandingController extends Controller
                     if (array_key_exists($i, $model->object_photos))
                         $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
                 }
-                $model->saveFilesByJsonArray($model->photos_files, $model->photos);
-                $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
+                $model->bg_photo = $model->saveFileByPath($model->bg_photo_file, $model->bg_photo);
+                $model->photos = $model->saveFilesByJsonArray($model->photos_files, $model->photos);
+                $model->arendator_photos = $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
 
                 $model->createPlaces($model, $numPlaces);
+
+                // Saving updated absolute urls
+                $model->save(false);
 
                 return $this->redirect(['view', 'id' => $model->landing_id]);
             }
@@ -253,6 +272,11 @@ class LandingController extends Controller
      */
     public function actionDelete($id)
     {
+        // Firstly delete all the places of the Landing
+        $places = Place::findPlacesByLanding($id);
+        foreach ($places as $place){
+            $place->delete();
+        }
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

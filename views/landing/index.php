@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'landing_id',
             'title',
-            
+            'building_type',            
             [
                 'label' => 'Количество помещений',
                 'value' => function($model){

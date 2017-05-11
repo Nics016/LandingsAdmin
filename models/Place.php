@@ -142,7 +142,7 @@ class Place extends \yii\db\ActiveRecord
             $answ .= 'Ставка: ' . $model['price'] . ' ' . $price_sign;
         $answ .= '</li>';
         $answ .= '<li>';
-            $answ .= 'Фотографии: ' . $photos;
+            $answ .= 'Фотографии: <br>' . $photos;
         $answ .= '</li>';
 
         return $answ;

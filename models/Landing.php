@@ -13,6 +13,10 @@ use app\models\PlaceLanding;
  *
  * @property integer $landing_id
  * @property string $title
+ * @property string $building_type
+ * @property string $phone
+ * @property string $address
+ * @property string $email
  * @property integer $meters
  * @property string $floor
  * @property integer $state
@@ -25,9 +29,7 @@ use app\models\PlaceLanding;
  * @property string $infostructure_text
  * @property string $location_text
  * @property string $contacts_text
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $bg_photo
  * @property decimal $latitude
  * @property decimal $longitude
  */
@@ -50,6 +52,7 @@ class Landing extends \yii\db\ActiveRecord
      * Used for files
      */
     public $object_photos;
+    public $bg_photo_file;
     public $object_photos_files;
     public $photos_files;
     public $arendator_photos_files;
@@ -71,9 +74,16 @@ class Landing extends \yii\db\ActiveRecord
         return [
             [['meters', 'latitude', 'longitude'], 'number'],
             [['state', 'planning', 'price', 'price_sign'], 'integer'],
-            [['floor', 'about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text', 'latitude', 'longitude'], 'required'],
-            [['about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text'], 'string'],
+            [['floor', 'about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text', 'latitude', 'longitude', 'phone', 'address', 'email', 'bg_photo', 'building_type'], 'required'],
+            [['about_text', 'characteristics_text', 'news_text', 'infostructure_text', 'location_text', 'contacts_text', 'phone', 'address', 'email', 'bg_photo', 'building_type'], 'string'],
             [['title', 'floor'], 'string', 'max' => 32],
+            [
+                'bg_photo_file', // variable name
+                'file', // type
+                'skipOnEmpty' => true,
+                'extensions' => ['png', 'jpg', 'gif', 'svg', 'jpeg'],
+                'maxFiles' => 1,
+            ],
             [
                 'object_photos_files', // variable name
                 'file', // type
@@ -253,7 +263,26 @@ class Landing extends \yii\db\ActiveRecord
             return $newFileNameArrayJson;
         }
         
-        return '';
+        return $fileNameArrayJson;
+    }
+
+    /**
+     * Сохраняет файл $file по пути $path.
+     *
+     * После этого преобразует $path в абсолютный и возвращает.
+     * @param  yii\web\UploadedFile $file 
+     * @param  string $path 
+     * @return string    
+     */
+    public function saveFileByPath($file, $path)
+    {
+        if ($file){
+            $file->saveAs($path);
+
+            return $this->toAbsolute($path);
+        }
+
+        return $path;
     }
 
     /**
@@ -271,6 +300,11 @@ class Landing extends \yii\db\ActiveRecord
         return [
             'landing_id' => 'Landing ID',
             'title' => 'Название',
+            'building_type' => 'Тип здания',
+            'phone' => 'Номер телефона',
+            'address' => 'Адрес',
+            'email' => 'Email для заявок',
+            'bg_photo_file' => 'Картинка фона',
             'about_text' => 'Об объекте',
             'characteristics_text' => 'Характеристики',
             'news_text' => 'Новости',
