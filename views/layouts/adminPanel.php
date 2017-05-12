@@ -92,8 +92,8 @@
             <ul id="main-menu" class="main-menu">
                 <!-- add class "multiple-expanded" to allow multiple submenus to open -->
                 <!-- class "auto-inherit-active-class" will automatically add "active" class for parent elements who are marked already with class "active" -->
-                <li class="has-sub opened active">
-                    <a href="layout-api.html">
+                <li class="has-sub active opened">
+                    <a href="<?= Url::base(true) ?>">
                         <i class="entypo-layout"></i>
                         <span class="title">Сайты</span>
                     </a>

@@ -1,6 +1,8 @@
 <?php 
 	namespace landing;
 	
+	use landing\LandingService;
+
 	class LandingService
 	{
 		/**
@@ -11,8 +13,12 @@
 		 * @param  string $password 
 		 * @return array $data
 		 */
-		public function getData($id, $username, $password){
-			$url="http://landings.devcloud.pro/?r=data/get-landing-data&id=" . $id;
+		
+		const BASE_URL = "http://landings.devcloud.pro/?r=data/";
+		const ID = 1;
+
+		public function getData($username, $password){
+			$url = LandingService::BASE_URL . "get-landing-data&id=" . LandingService::ID;
 
 			//  Initiate curl
 			$ch = curl_init();
@@ -48,11 +54,30 @@
 		 * @param string $topic 
 		 * @param string $email 
 		 */
-		public function SendEmail($msg, $topic, $email){
-			$headers = "MIME-Version: 1.0" . "\r\n";
-			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-			$msg = wordwrap($msg,70);
-			mail($email, $topic, $msg, $headers);
+		public function SendEmail($username, $password, $msg, $topic, $email){
+			$url= LandingService::BASE_URL . "send-email&id=" . LandingService::ID
+				. '&msg=' . urlencode($msg)
+				. '&topic=' . urlencode($topic)
+				. '&email=' . urlencode($email);
+
+			//  Initiate curl
+			$ch = curl_init();
+			// Disable SSL verification
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			// Will return the response, if false it print the response
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			// Set the url
+			curl_setopt($ch, CURLOPT_URL,$url);
+			// Set data for auth
+			curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+
+			// Execute command
+			$exec_result=curl_exec($ch);
+			$result = json_decode($exec_result, true);
+			// Closing connection
+			curl_close($ch);
+
+			return $result;
 		}
 
 		/**

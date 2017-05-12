@@ -8,11 +8,9 @@
 	use landing\LandingService;
 
 	// Получение данных о сайте
-	$id = '1';
 	$username = 'test_manager';
 	$pass = '555666888';
 	$data = LandingService::getData(
-		$id,
 		$username,
 		$pass
 	);
@@ -38,7 +36,7 @@
 		if (isset($_POST['client_email']))
 			$topic = 'Поступила новая заявка на вашем сайте "' . $landing['title'] . '"!';
 		$email = $landing['email'];
-		LandingService::SendEmail($msg, $topic, $email);
+		LandingService::SendEmail($username, $pass, $msg, $topic, $email);
 		echo 'Ваше сообщение было успешно отправлено. Спасибо!';		
 	}
  ?>

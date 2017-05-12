@@ -43,7 +43,7 @@
                 ],
                 'rules' => [
                     [
-                        'actions' => ['get-landing-data'],
+                        'actions' => ['get-landing-data', 'send-email'],
                         'allow' => true,
                         // Allow only admin
                         'roles' => [
@@ -51,7 +51,7 @@
                         ],
                     ],
                     [
-                        'actions' => ['create', 'index', 'update', 'view', 'delete', 'get-landing-data'],
+                        'actions' => ['create', 'index', 'update', 'view', 'delete', 'get-landing-data', 'send-email'],
                         'allow' => true,
                         // Allow only admin
                         'roles' => [
@@ -63,6 +63,29 @@
 			]);
 		}
 
+		public function actionSendEmail($id, $msg, $topic, $email)
+		{
+			// firstly chech whether user has access to this landing
+			$u_id = Yii::$app->user->identity->id;
+			if (UserLanding::userHasAccessToLanding($u_id, $id)){
+				$landing = Landing::findOne($id);
+				$headers = "MIME-Version: 1.0" . "\r\n";
+				$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+				// $msg = wordwrap($msg,70);
+				mail($email, $topic, $msg, $headers);
+				return "good";
+			}
+			else
+				return "У вас нет доступа к этому сайту";
+		}
+
+		/**
+		 * Возвращает данные о лэндинге и его площадках
+		 * с авторизацией.		
+		 * 
+		 * @param integer $id - landing id
+		 * @return array - array with two keys - 'landing', 'places'
+		 */
 		public function actionGetLandingData($id)
 		{
 			// firstly chech whether user has access to this landing

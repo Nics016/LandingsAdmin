@@ -313,8 +313,8 @@ class Landing extends \yii\db\ActiveRecord
             'contacts_text' => 'Контакты',
             'photos_files' => 'Фотографии (можно выбрать несколько файлов)',
             'arendator_photos_files' => 'Арендаторы (можно выбрать несколько файлов)',
-            'latitude' => 'Широта (для Google Maps)',
-            'longitude' => 'Долгота (для Google Maps)',
+            'latitude' => 'Широта (для Yandex Maps)',
+            'longitude' => 'Долгота (для Yandex Maps)',
         ];
     }
 }

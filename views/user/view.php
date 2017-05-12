@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\data\ActiveDataProvider;
 
+use app\models\User;
 use app\models\UserLanding;
 
 /* @var $this yii\web\View */
@@ -74,12 +75,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Имеет доступ к сайтам',
                 'format' => 'html',
                 'value' => function($model){
+                    if ($model->role === User::ROLE_ADMIN)
+                        return "все";
                     $returnUl = '<ul>';
                     $landings = UserLanding::findLandingsByManager($model->id);
                     foreach($landings as $land){
                         $returnUl .= '<li>' . $land->title . '</li>';
                     }
                     $returnUl .= '</ul>';
+                    if ($returnUl === '<ul></ul>')
+                        $returnUl = '-';
                     return $returnUl;
                 }
             ],

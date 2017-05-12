@@ -45,7 +45,8 @@ class LandingController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => ['update', 'view'],
+                        'actions' => ['update', 'view',
+                            'ask-places', 'ask-places-update'],
                         'allow' => true,
                         // Allow only admin
                         'roles' => [

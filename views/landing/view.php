@@ -152,6 +152,8 @@ if (UserLanding::userHasAccessToLanding(Yii::$app->user->identity->id, $model->l
                 'attribute' => 'contacts_text',
                 'format' => 'html',
             ],
+            'latitude',
+            'longitude',
         ],
     ]) ?>
 

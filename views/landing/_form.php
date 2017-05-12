@@ -65,9 +65,7 @@ use dosamigos\tinymce\TinyMce;
 
 <div class="landing-form">
     <?php $form = ActiveForm::begin(); ?>
-    <?php if ($model->isNewRecord || Yii::$app->user->identity->role == User::ROLE_ADMIN): ?>
-        <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-    <?php endif; ?>
+    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'building_type')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
