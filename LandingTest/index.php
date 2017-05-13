@@ -39,6 +39,8 @@
 		LandingService::SendEmail($username, $pass, $msg, $topic, $email);
 		echo 'Ваше сообщение было успешно отправлено. Спасибо!';		
 	}
+
+	// var_dump($data);
  ?>
 
 <!DOCTYPE html>
