@@ -11,3 +11,38 @@
   <li>Админ может создавать других админов и обычных пользователей и удалять их. Так же он может менять информацию о пользователях и давать доступ к определенным сайтам</li>
   <li>Пользователь видит в админ-панели только те сайты, к которым ему был предоставлен доступ администратором.</li>
 </ul>
+<h2>Локальное кэширование на хостинге Лэндинга</h2>
+<ul>
+	<li>Используется для уменьшения нагрузки на сервер и 
+	для случаев, когда сервер не работает.</li>
+	<li>Кэшируются все картинки и весь контент.</li>
+	<li>Новое кэширование происходит не быстрее, чем через 30 минут после предыдущего.</li>
+	<li>Если через 30 минут при попытке обращения к серверу выводится ошибка, используются локальные ранее кэшированные данные до тех пор, пока сервер снова не заработает. Если кэширование ранее не производилось, вместо заголовка страницы будет показана ошибка.</li>
+	<li>Если на момент кэширование картинка уже существует, заново она кэшироваться не будет.</li>
+</ul>
+<h2>Сжатие загружаемых картинок</h2>
+<ul>
+	<li>Сжимаются все картинки, вес которых > 300 КБ</li>
+	<li>Для сжатия изначальная картинка обрезается до "коробки", размером 1200х1200, с сохранением изначальной ротации. Например, если было изображение 3500х2000, то после сжатия оно будет примерно 1200х800.</li>
+	<li>Пример тестирования сжатия: была картинка 3500 х 2600, весом 1.2 МБ, после сжатия она стала 1200х900, весом 77.6 КБ. Качество визуально не изменилось.</li>
+</ul>
+<h2>Скриншоты</h2>
+<ul style="list-style-type: none">
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6a0/HYN6SXeWpP4.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6aa/jn49DzIGxLE.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6b4/V2OxYAWVrMI.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6be/ZHZvU1W19Uk.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6c8/tvVXy48wfWU.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6d2/VGwFVxPIRfg.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6dc/Z5pKFa_80YY.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6e6/ADbhElMLsmc.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6f0/XadXvPhED4A.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c6fa/Y-_MOc_Yewo.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c704/UOKCjo2jkLg.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c70e/KwmQZuf9MWg.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c718/iN9BuGdk4xI.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c722/eUJmjbha1XY.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c72c/15J7Z19o3vc.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c736/LLA3WFj8p9U.jpg" alt=""></li>
+	<li><img src="https://pp.userapi.com/c837231/v837231114/3c740/ZO6RCriXiVs.jpg" alt=""></li>
+</ul>
