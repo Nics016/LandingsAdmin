@@ -4,26 +4,57 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Place;
+use app\models\User;
+use app\models\UserLanding;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\components\AccessRule;
+use yii\filters\AccessControl;
 
 /**
  * PlaceController implements the CRUD actions for Place model.
  */
 class PlaceController extends Controller
 {
+    public $layout = 'adminPanel';
+
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
+
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['POST', 'GET'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                'rules' => [
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        // Allow only admin
+                        'roles' => [
+                            User::ROLE_MANAGER
+                        ],
+                    ],
+                    [
+                        'actions' => ['create', 'index', 'update', 'view', 'delete'],
+                        'allow' => true,
+                        // Allow only admin
+                        'roles' => [
+                            User::ROLE_ADMIN
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -99,11 +130,21 @@ class PlaceController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $land_id, $numPlaces)
     {
-        $this->findModel($id)->delete();
+        // firstly chech whether user has access to this landing
+        $u_id = Yii::$app->user->identity->id;
+        if (UserLanding::userHasAccessToLanding($u_id, $land_id)){
+            $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+            return $this->redirect(['landing/update',
+                    'id' => $land_id,
+                    'numPlaces' => $numPlaces,
+                ]);
+        } else {
+            return $this->renderContent("Вы не можете удалить это помещение, "
+                . "так как вы не имеете доступа к лэндингу, на котором находится это помещение. Пожалуйста, сообщите администратору, если вы считаете, что это ошибка.");
+        }
     }
 
     /**

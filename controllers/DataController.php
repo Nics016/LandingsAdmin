@@ -95,6 +95,7 @@
 				$data = [];
 				$data['landing'] = $landing;
 				$data['places'] = Landing::getLandingPlaces($id);
+				$data['status'] = 'ok';
 			}
 			else
 				return "У вас нет доступа к этому сайту";

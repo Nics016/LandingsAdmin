@@ -82,6 +82,7 @@ use dosamigos\tinymce\TinyMce;
                 <th>Ставка</th>
                 <th></th>
                 <th>Фото</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -120,6 +121,15 @@ use dosamigos\tinymce\TinyMce;
                         ], ['value' => $existingPlaces[$i]['price_sign']])->label(false) ?>
                     </td>
                     <td style="width: 150px"><?= $form->field($model, 'object_photos_files[' . $i . '][]')->fileInput(['multiple' => true])->label(false) ?></td>
+                    <td>
+                        <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', 'index.php?r=place/delete&id='
+                                . $existingPlaces[$i]['place_id']
+                                . "&land_id=" . $model['landing_id']
+                                . "&numPlaces=" . (count($existingPlaces) - 1), 
+                            [
+                                'title' => 'Удалить помещение',
+                    ]); ?>
+                    </td>
                 </tr>        
                 <?php endfor; ?> 
 
