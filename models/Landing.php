@@ -7,6 +7,10 @@ use yii\helpers\Url;
 use yii\web\UploadedFile;
 use app\models\Place;
 use app\models\PlaceLanding;
+use yii\imagine\Image;
+use Imagine\Gd;
+use Imagine\Image\Box;
+use Imagine\Image\BoxInterface;
 
 /**
  * This is the model class for table "landing".
@@ -250,6 +254,7 @@ class Landing extends \yii\db\ActiveRecord
             for ($i = 0; $i < count($fileNameArray); $i++){
                 if ($files[$i]){
                     $result = $files[$i]->saveAs($fileNameArray[$i]);
+                    $this->compressImg($fileNameArray[$i]);
                     if (!$result)
                         return 'error';
                 }
@@ -279,6 +284,7 @@ class Landing extends \yii\db\ActiveRecord
         if ($file){
             $file->saveAs($path);
 
+            $this->compressImg($path);
             return $this->toAbsolute($path);
         }
 
@@ -288,8 +294,21 @@ class Landing extends \yii\db\ActiveRecord
     /**
      * Преобразует ссылку в абсолютную
      */
-    public function toAbsolute($url){
+    public function toAbsolute($url)
+    {
         return Url::base(true) . '/' . $url;
+    }
+
+    public function compressImg($path)
+    {
+        if (filesize($path) > 300 * 1024){
+            $imagineObj = Image::getImagine();
+            $imagineObj = $imagineObj->open($path)
+            ->thumbnail(
+                new Box(1200, 1200)
+            )
+            ->save($path, ['quality' => 90]);
+        }
     }
 
     /**
