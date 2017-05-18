@@ -229,7 +229,9 @@ button.btn_blue {
   margin-bottom: -10px;
 }
 .header_bot {
-  background: url("../img/bg_header_bot.jpg") no-repeat 50% 0;
+  background-image: url("../img/bg_header_bot.jpg");
+  background-repeat: no-repeat;
+  background-position: 50% 0;
   -webkit-background-size: cover;
           background-size: cover;
   margin: 0 -15px;

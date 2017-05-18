@@ -9,6 +9,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use common\widgets\Alert;
+use yii\helpers\Url;
 
 AppAsset::register($this);
 ?>
@@ -44,7 +45,7 @@ AppAsset::register($this);
             . Html::endForm();
  ?>
 <?= $content ?>
-<a href="http://print4you.ru"> Вернуться на главную</a>
+<a href="<?= Url::base(true) ?>"> Вернуться на главную</a>
 <?php endif; ?>
 
 <?php $this->endBody() ?>

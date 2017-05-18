@@ -81,7 +81,7 @@
 				</span>
 			</div>
 		</div>
-		<div class="header_bot" style="background: url(<?= $landing['bg_photo'] ?>)">
+		<div class="header_bot" style="background-image: url(<?= $landing['bg_photo'] ?>)">
 			<div class="header_btn">
 				<div class="header_box">
 					<div class="header_bot_col">
@@ -113,7 +113,6 @@
 
 	<!--CONTENT-->
 	<div class="content">
-
 
 		<section class="section" id="sc_free">
 			<div class="content_box">
