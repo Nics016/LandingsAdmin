@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Landing;
+use app\models\UserLanding;
 use app\models\Place;
 use app\models\AskPlaces;
 use yii\data\ActiveDataProvider;
@@ -46,7 +47,7 @@ class LandingController extends Controller
                 'rules' => [
                     [
                         'actions' => ['update', 'view',
-                            'ask-places', 'ask-places-update'],
+                            'ask-places', 'ask-places-update', 'delete-photo'],
                         'allow' => true,
                         // Allow only admin
                         'roles' => [
@@ -55,7 +56,7 @@ class LandingController extends Controller
                     ],
                     [
                         'actions' => ['create', 'index', 'update', 'view', 'delete',
-                            'ask-places', 'ask-places-update'],
+                            'ask-places', 'ask-places-update', 'delete-photo'],
                         'allow' => true,
                         // Allow only admin
                         'roles' => [
@@ -131,6 +132,46 @@ class LandingController extends Controller
         } else {
             return $this->render('ask-places', [
                 'model' => $model,
+            ]);
+        }
+    }
+
+    public function actionDeletePhoto($id, $numPlaces, $photoCat, $photoId, $placeId = -1)
+    {
+        if (!UserLanding::userHasAccessToLanding(Yii::$app->user->identity->id, $id)){
+            return $this->renderContent("У вас нет доступа к этому лэндингу");
+        } else {
+            $model = $this->findModel($id);
+
+            switch ($photoCat) {
+                case Landing::PLACES_CAT:
+                    $placeModel = Place::findOne($placeId);
+                    $photos = json_decode($placeModel->object_photos);
+                    array_splice($photos, $photoId, 1);
+                    $placeModel->object_photos = json_encode($photos);
+                    $placeModel->save(false);
+                    break;
+
+                case Landing::PHOTOS_CAT:
+                    $photos = json_decode($model->photos);
+                    array_splice($photos, $photoId, 1);
+                    $model->photos = json_encode($photos);
+                    $model->save(false);
+                    break;
+
+                case Landing::ARENDATORS_CAT:
+                    $photos = json_decode($model->arendator_photos);
+                    array_splice($photos, $photoId, 1);
+                    $model->arendator_photos = json_encode($photos);
+                    $model->save(false);
+                    break;
+            }
+
+            // redirect to Update 
+            return $this->redirect([
+                'update',
+                'id' => $model->landing_id,
+                'numPlaces' => $numPlaces,
             ]);
         }
     }
@@ -218,6 +259,19 @@ class LandingController extends Controller
                     $model->bg_photo_file
                 );
 
+            // save old JSON arrays
+            $placesExist = Place::find()
+                ->where('landing_id=' . $model->landing_id)
+                ->all();
+
+            $oldPhotos = $model->photos;
+            $oldArendatorPhotos = $model->arendator_photos;
+
+            $oldObjectPhotos = [];
+            for ($i = 0; $i < count($placesExist); $i++){
+                $oldObjectPhotos[$i] = $placesExist[$i]['object_photos'];
+            }
+
             $model->convertFilesArrayToJson(
                 $model,
                 'object_photos_files',
@@ -238,12 +292,17 @@ class LandingController extends Controller
             if ($model->save(false)){
                 // saving files on server
                 for($i = 0; $i < $numPlaces; $i++){
-                    if (array_key_exists($i, $model->object_photos))
-                        $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
+                    if (array_key_exists($i, $model->object_photos)){
+                        if (array_key_exists($i, $oldObjectPhotos)){
+                            $model->object_photos[$i] = $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i], $oldObjectPhotos[$i]);
+                        } else {
+                            $model->saveFilesByJsonArray($model->object_photos_files[$i], $model->object_photos[$i]);
+                        }
+                    }
                 }
                 $model->bg_photo = $model->saveFileByPath($model->bg_photo_file, $model->bg_photo);
-                $model->photos = $model->saveFilesByJsonArray($model->photos_files, $model->photos);
-                $model->arendator_photos = $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos);
+                $model->photos = $model->saveFilesByJsonArray($model->photos_files, $model->photos, $oldPhotos);
+                $model->arendator_photos = $model->saveFilesByJsonArray($model->arendator_photos_files, $model->arendator_photos, $oldArendatorPhotos);
 
                 $model->createPlaces($model, $numPlaces);
 

@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 use app\models\Landing;
@@ -32,8 +33,21 @@ use dosamigos\tinymce\TinyMce;
         $photos = json_decode($model->photos);
         if ($photos){
             $answ = '<br>';
+            $i = 0;
             foreach ($photos as $photo){
-                $answ .= Html::img($photo, ['style' => 'max-width: 400px']).'<br>'.'<br>';
+                $answ .= Html::img($photo, ['style' => 'max-width: 100px'])
+                .'<a href="'
+                    .Url::toRoute([
+                        'delete-photo', 
+                        'id' => $model->landing_id,
+                        'numPlaces' => $numPlaces,
+                        'photoCat' => Landing::PHOTOS_CAT,
+                        'photoId' => $i,
+                    ])
+                    . '" class="btn btn-danger ml20"> Удалить </a>';
+                    if (($i + 1) % 4 === 0)
+                        $answ .= '<br> <br>';
+                $i++;
             }
             $object_photos_label .= $answ;
         }
@@ -41,8 +55,21 @@ use dosamigos\tinymce\TinyMce;
         $photos = json_decode($model->arendator_photos);
         if ($photos){
             $answ = '<br>';
+            $i = 0;
             foreach ($photos as $photo){
-                $answ .= Html::img($photo, ['style' => 'max-width: 400px']).'<br>'.'<br>';
+                $answ .= Html::img($photo, ['style' => 'max-width: 100px'])
+                .'<a href="'
+                    .Url::toRoute([
+                        'delete-photo', 
+                        'id' => $model->landing_id,
+                        'numPlaces' => $numPlaces,
+                        'photoCat' => Landing::ARENDATORS_CAT,
+                        'photoId' => $i,
+                    ])
+                    . '" class="btn btn-danger ml20"> Удалить </a>';
+                    if (($i + 1) % 4 === 0)
+                        $answ .= '<br> <br>';
+                $i++;
             }
             $object_arendator_photos_label .= $answ;
         }
@@ -66,11 +93,10 @@ use dosamigos\tinymce\TinyMce;
 <div class="landing-form">
     <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'building_type')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
-     <?= $form->field($model, 'bg_photo_file')->fileInput()->label($bg_photo_label) ?>
+
+    <?= $form->field($model, 'photos_files[]')->fileInput(['multiple' => true])->label($object_photos_label) ?>
+
+    <?= $form->field($model, 'arendator_photos_files[]')->fileInput(['multiple' => true])->label($object_arendator_photos_label) ?>
 
     <table class="table">
         <thead class="thead-inverse">
@@ -120,7 +146,36 @@ use dosamigos\tinymce\TinyMce;
                             Place::PRICE_SIGN_EUR => '€',
                         ], ['value' => $existingPlaces[$i]['price_sign']])->label(false) ?>
                     </td>
-                    <td style="width: 150px"><?= $form->field($model, 'object_photos_files[' . $i . '][]')->fileInput(['multiple' => true])->label(false) ?></td>
+                    <td style="width: 150px">
+                        <div>
+                            <?php 
+                                // outputting existing photos for objects
+                                $photos = json_decode($existingPlaces[$i]['object_photos']);
+                                if ($photos){
+                                    $answ = '<br>';
+                                    $j = 0;
+                                    foreach ($photos as $photo){
+                                        $answ .= Html::img($photo, ['style' => 'max-width: 80px'])
+                                        .'<a href="'
+                                            .Url::toRoute([
+                                                'delete-photo', 
+                                                'id' => $model->landing_id,
+                                                'numPlaces' => $numPlaces,
+                                                'photoCat' => Landing::PLACES_CAT,
+                                                'photoId' => $j,
+                                                'placeId' => $existingPlaces[$i]['place_id'],
+                                            ])
+                                            . '" class="btn btn-danger ml20"> Удалить </a>'
+                                        .'<br>'.'<br>';
+                                        $j++;
+                                    }
+                                }
+                             ?>
+                             <?= $answ ?>
+                        </div>
+                        <?= $form->field($model, 'object_photos_files[' . $i . '][]')->fileInput(['multiple' => true])->label(false) ?>
+                            
+                    </td>
                     <td>
                         <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', 'index.php?r=place/delete&id='
                                 . $existingPlaces[$i]['place_id']
@@ -130,7 +185,7 @@ use dosamigos\tinymce\TinyMce;
                                 'title' => 'Удалить помещение',
                     ]); ?>
                     </td>
-                </tr>        
+                </tr>      
                 <?php endfor; ?> 
 
             <?php endif; ?>
@@ -169,18 +224,20 @@ use dosamigos\tinymce\TinyMce;
             <?php endfor; ?>   
         </tbody>
     </table>
+
+    <?= $form->field($model, 'building_type')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+     <?= $form->field($model, 'bg_photo_file')->fileInput()->label($bg_photo_label) ?>
     
     <?= $form->field($model, 'about_text')->widget(TinyMce::className(), $tinyOptions) ?> 
 
     <?= $form->field($model, 'characteristics_text')->widget(TinyMce::className(), $tinyOptions) ?>
-    
-    <?= $form->field($model, 'photos_files[]')->fileInput(['multiple' => true])->label($object_photos_label) ?>
 
     <?= $form->field($model, 'news_text')->widget(TinyMce::className(), $tinyOptions) ?>
 
-    <?= $form->field($model, 'infostructure_text')->widget(TinyMce::className(), $tinyOptions) ?>
-
-    <?= $form->field($model, 'arendator_photos_files[]')->fileInput(['multiple' => true])->label($object_arendator_photos_label) ?>
+    <?= $form->field($model, 'infostructure_text')->widget(TinyMce::className(), $tinyOptions) ?>    
 
     <?= $form->field($model, 'location_text')->widget(TinyMce::className(), $tinyOptions) ?>
 

@@ -61,7 +61,9 @@ class Landing extends \yii\db\ActiveRecord
     public $photos_files;
     public $arendator_photos_files;
     
-
+    const PLACES_CAT = 10;
+    const PHOTOS_CAT = 20;
+    const ARENDATORS_CAT = 30;
     /**
      * @inheritdoc
      */
@@ -213,12 +215,14 @@ class Landing extends \yii\db\ActiveRecord
     {
         $newAttrNameArray = [];
         $newAttrNameJsonArray = [];
+
         for ($i = 0; $i < $num; $i++){
             $newAttrNameArray[$i] = UploadedFile::getInstances(
                 $model, $attrName . '[' . $i . ']');
 
-            if (count($newAttrNameArray[$i]) > 0)
+            if (count($newAttrNameArray[$i]) > 0){
                 $newAttrNameJsonArray[$i] = $this->generateJsonArray($newAttrNameArray[$i]);
+            }
         }
         $model[$attrName] = $newAttrNameArray;
         $model[$attrJson] = $newAttrNameJsonArray;
@@ -247,7 +251,7 @@ class Landing extends \yii\db\ActiveRecord
      * @param  JsonArrayString $fileNameArrayJson массив в формате Json путей файлов
      * @return boolean                    результат
      */
-    public function saveFilesByJsonArray($files, $fileNameArrayJson)
+    public function saveFilesByJsonArray($files, $fileNameArrayJson, $oldFilesArrayJson = NULL)
     {
         if (count($files) > 0){
             $fileNameArray = json_decode($fileNameArrayJson);
@@ -264,6 +268,12 @@ class Landing extends \yii\db\ActiveRecord
             for ($i = 0; $i < count($fileNameArray); $i++){
                 $fileNameArray[$i] = $this->toAbsolute($fileNameArray[$i]);
             }
+
+            if ($oldFilesArrayJson){
+                $oldFiles = json_decode($oldFilesArrayJson);
+                $fileNameArray = array_merge($oldFiles, $fileNameArray);
+            }
+
             $newFileNameArrayJson = json_encode($fileNameArray);
             return $newFileNameArrayJson;
         }
