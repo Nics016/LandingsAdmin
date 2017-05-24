@@ -30,6 +30,7 @@ use dosamigos\tinymce\TinyMce;
         if ($model->bg_photo)
             $bg_photo_label .= Html::img($model->bg_photo, ['style' => 'max-width: 400px']).'<br>'.'<br>';
 
+        $answ = "";
         $photos = json_decode($model->photos);
         if ($photos){
             $answ = '<br>';
@@ -52,6 +53,7 @@ use dosamigos\tinymce\TinyMce;
             $object_photos_label .= $answ;
         }
 
+        $answ = "";
         $photos = json_decode($model->arendator_photos);
         if ($photos){
             $answ = '<br>';
@@ -150,6 +152,7 @@ use dosamigos\tinymce\TinyMce;
                         <div>
                             <?php 
                                 // outputting existing photos for objects
+                                $answ = "";
                                 $photos = json_decode($existingPlaces[$i]['object_photos']);
                                 if ($photos){
                                     $answ = '<br>';

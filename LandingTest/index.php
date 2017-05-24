@@ -118,7 +118,7 @@
 			<div class="content_box">
 				<div class="head_title">
 					<h2>Свободные площади</h2>
-					<p>Свободные площади <strong><a href="tel:" class="tel"><?= $landing['phone'] ?></a></strong></p>
+					<p>Отдел аренды <strong><a href="tel:" class="tel"><?= $landing['phone'] ?></a></strong></p>
 				</div>
 				<table class="tbl_free">
 					<tr>
@@ -153,19 +153,7 @@
 						</tr>
 					<?php endforeach; ?>
 				</table>
-				<form method="POST">
-				<div class="form_page">
-					<label>Ваше имя *</label>
-					<div class="in_box">
-						<input type="text" class="tx" name="client_name">
-					</div>
-					<label>Собщение</label>
-					<div class="in_box">
-						<textarea name="client_msg"></textarea>
-					</div>
-					<button class="btn_blue" type="submit">Отправить</button>
-				</div>
-			</form>
+				
 			</div>
 		</section>
 
